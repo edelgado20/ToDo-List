@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-class Item:Object {
+class Item: Object {
     
     @objc dynamic var id: Int = Int(arc4random_uniform(100) + 1)
     @objc dynamic var name: String = ""

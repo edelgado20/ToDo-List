@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
-
+    
     var realm: Realm? = nil
     @IBOutlet weak var tableView: UITableView!
     var categoriesArray: Results<Category>? {
@@ -59,6 +59,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         realm = try! Realm()
         print(Realm.Configuration.defaultConfiguration.fileURL)
     }

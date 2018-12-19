@@ -85,9 +85,9 @@
 				3F179039211E2865000BC603 /* Models */,
 				3FEC90E421C47F640087E68F /* View */,
 				3FEC90E321C47EE90087E68F /* Controller */,
-				3F3EC72C211D006100BFA5E3 /* AppDelegate.swift */,
 				3F3EC733211D006400BFA5E3 /* Assets.xcassets */,
 				3F3EC735211D006400BFA5E3 /* LaunchScreen.storyboard */,
+				3F3EC72C211D006100BFA5E3 /* AppDelegate.swift */,
 				3F3EC738211D006400BFA5E3 /* Info.plist */,
 			);
 			path = "To-Do List";

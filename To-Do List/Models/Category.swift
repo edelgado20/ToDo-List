@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-class Category: Object{
+class Category: Object {
     
     //init
    /* convenience init(name: String) {
