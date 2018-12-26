@@ -23,9 +23,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoriesArray?.count ?? 0
     }
+    
     // loops through the table view and display every cell 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = categoriesArray![indexPath.row].name
         cell.accessoryType = .disclosureIndicator // add the disclosure indicater(>) in each cell
         return cell
@@ -41,13 +42,29 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.reloadData()
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("prepareForSiefsefoi")
+        guard let identifier = segue.identifier else { return }
+        
+        switch identifier {
+        case "showItemsVC":
+            let cell = sender as! UITableViewCell
+            let indexPath = tableView.indexPath(for: cell)!
+            let vc = segue.destination as! ItemsVC
+            vc.category = categoriesArray![indexPath.row]
+        default:
+            break
+        }
+    }
+     
     //switch to items_vc
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //segue to items list view
         
         //let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let controller = storyboard?.instantiateViewController(withIdentifier: "items_vc")
-        self.navigationController?.pushViewController(controller!, animated: true)
+//        let controller = storyboard!.instantiateViewController(withIdentifier: "items_vc") as! ItemsVC
+//        controller.category = categoriesArray![indexPath.row]
+//        self.navigationController?.pushViewController(controller!, animated: true)
         
 //        guard let vc = storyboard.instantiateViewController(withIdentifier: "items_vc") as? ItemsVC else {
 //            return print("not items vc")
@@ -55,7 +72,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
 //        vc.str = categoriesArray?[indexPath.row].name ?? "string"
 //        navigationController?.present(vc, animated: true, completion: {})
-    }
+//    }
 
     override func viewDidLoad() {
         super.viewDidLoad()

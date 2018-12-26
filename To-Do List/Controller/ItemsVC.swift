@@ -16,9 +16,11 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var TABLEVIEW: UITableView!
     
     var realm: Realm? = nil
+    var category: Category!
    
     var itemsArray: Results<Item>? {
         get {
+            print("Category: \(category)")
             return realm?.objects(Item.self)
         }
     }
@@ -28,7 +30,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ TABLEVIEW: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
+        let cell = TABLEVIEW.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = itemsArray![indexPath.row].name
         cell.accessoryType = .disclosureIndicator
         
