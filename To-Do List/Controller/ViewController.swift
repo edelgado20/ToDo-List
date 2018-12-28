@@ -15,6 +15,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var tableView: UITableView!
     var categoriesArray: Results<Category>? {
         get {
+            print(realm?.objects(Category.self))
             return realm?.objects(Category.self)
         }
     }
@@ -35,15 +36,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     //function to delete a category
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            realm?.beginWrite()
-            realm?.delete(categoriesArray![indexPath.row])
-            try? realm?.commitWrite()
+            try! realm?.write {
+                realm?.delete(categoriesArray![indexPath.row])
+            }
         }
         tableView.reloadData()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("prepareForSiefsefoi")
+        print("prepareForSegue")
         guard let identifier = segue.identifier else { return }
         
         switch identifier {
@@ -56,24 +57,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             break
         }
     }
-     
-    //switch to items_vc
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //segue to items list view
-        
-        //let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        let controller = storyboard!.instantiateViewController(withIdentifier: "items_vc") as! ItemsVC
-//        controller.category = categoriesArray![indexPath.row]
-//        self.navigationController?.pushViewController(controller!, animated: true)
-        
-//        guard let vc = storyboard.instantiateViewController(withIdentifier: "items_vc") as? ItemsVC else {
-//            return print("not items vc")
-//        }
-        
-//        vc.str = categoriesArray?[indexPath.row].name ?? "string"
-//        navigationController?.present(vc, animated: true, completion: {})
-//    }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         

@@ -13,13 +13,13 @@ class AddCategoryVC: UIViewController, UITextFieldDelegate{
     
     var realm: Realm!
 
-    @IBOutlet weak var catNameTextField: UITextField!
+    @IBOutlet weak var categoryNameTextField: UITextField!
     @IBOutlet weak var doneButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         realm = try! Realm()
-        catNameTextField.delegate = self
+        categoryNameTextField.delegate = self
         doneButton.isEnabled = false
     }
     
@@ -39,7 +39,7 @@ class AddCategoryVC: UIViewController, UITextFieldDelegate{
     
     @IBAction func doneButtonTap(_ sender: Any) {
         let category = Category()
-        category.name = catNameTextField.text!
+        category.name = categoryNameTextField.text!
        
         try! self.realm.write {
             self.realm.add(category)

@@ -41,17 +41,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-//    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
-//        let selectedCell:UITableViewCell = tableView.cellForRow(at: indexPath)!
-//        selectedCell.contentView.backgroundColor = UIColor.red
-//    }
-//
-//    func tableView(tableView: UITableView, didDeselectRowAtIndexPath indexPath: NSIndexPath) {
-//        let cellToDeSelect:UITableViewCell = tableView.cellForRow(at: indexPath as IndexPath)!
-//        cellToDeSelect.contentView.backgroundColor = UIColor.white
-//    }
-    
-    // changes to edit view controller
+    // segue way to edit view controller
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = storyboard?.instantiateViewController(withIdentifier: "editItem_vc")
         let edit = controller as? Edit_Item_VC
@@ -62,9 +52,9 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // deletes an item
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            realm?.beginWrite()
-            realm?.delete(itemsArray![indexPath.row])
-            try? realm?.commitWrite()
+            try! realm?.write {
+                realm?.delete(itemsArray![indexPath.row])
+            }
         }
         tableView.reloadData() //reloads table view up to date
     }
@@ -88,27 +78,5 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @objc func checkboxClicked(_ sender: UIButton){
         sender.isSelected = !sender.isSelected
     }
-    
-    
-    
-    /*func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
-    }*/
-    
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
