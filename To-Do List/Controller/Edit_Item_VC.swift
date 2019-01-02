@@ -20,7 +20,9 @@ class Edit_Item_VC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         realm = try! Realm()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         editName.text = getItem.name
         editDescription.text = getItem.descrip
     }

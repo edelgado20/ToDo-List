@@ -15,7 +15,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var tableView: UITableView!
     var categoriesArray: Results<Category>? {
         get {
-            print(realm?.objects(Category.self))
             return realm?.objects(Category.self)
         }
     }

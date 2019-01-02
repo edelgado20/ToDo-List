@@ -14,6 +14,7 @@ class Item: Object {
     @objc dynamic var id: Int = Int(arc4random_uniform(100) + 1)
     @objc dynamic var name: String = ""
     @objc dynamic var descrip: String = ""
+    @objc dynamic var category: Category?
     
 //    @objc dynamic var c_id: Int = 0
 //    @objc dynamic var dueDate: Date

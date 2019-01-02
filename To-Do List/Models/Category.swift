@@ -10,18 +10,13 @@ import Foundation
 import RealmSwift
 
 class Category: Object {
+
+    @objc dynamic var name: String = ""
+    @objc dynamic var id: String = UUID().uuidString
     
-    //init
-   /* convenience init(name: String) {
-        self.init()
-        self.name = name
-    }*/
-    
-    //Properties
-    @objc dynamic var name:String = ""
-   // @objc dynamic var id: Int = 0
-    
-    //Meta Data
+    override static func primaryKey() -> String? {
+        return "id"
+    }
     
     
 }

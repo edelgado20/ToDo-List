@@ -10,8 +10,6 @@ import UIKit
 import RealmSwift
 
 class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
-
-    var str = ""
     
     @IBOutlet weak var TABLEVIEW: UITableView!
     
@@ -20,8 +18,8 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
    
     var itemsArray: Results<Item>? {
         get {
-            print("Category: \(category)")
-            return realm?.objects(Item.self)
+            let predicate = NSPredicate(format: "category = %@", category)
+            return realm?.objects(Item.self).filter(predicate)
         }
     }
     
@@ -31,7 +29,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ TABLEVIEW: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = TABLEVIEW.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = itemsArray![indexPath.row].name
+        cell.textLabel?.text = itemsArray?[indexPath.row].name
         cell.accessoryType = .disclosureIndicator
         
         if let btnChk = cell.contentView.viewWithTag(2) as? UIButton {
@@ -41,12 +39,30 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    // segue way to edit view controller
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    // segue to edit view controller
+    /*func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = storyboard?.instantiateViewController(withIdentifier: "editItem_vc")
         let edit = controller as? Edit_Item_VC
         edit?.getItem = itemsArray?[indexPath.row] ?? Item()
-        self.navigationController?.pushViewController(controller!, animated: true)
+        self.navigationController?.pushViewController(edit!, animated: true)
+    }*/
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let identifier = segue.identifier else { return }
+        print("preparing for segue to edit item vc")
+        if identifier == "edit_Item_Segue" {
+            let cell = sender as! UITableViewCell
+            let indexPath = TABLEVIEW.indexPath(for: cell)
+            let editItemVC = segue.destination as! Edit_Item_VC
+            print("value = \(itemsArray![indexPath!.row])")
+            editItemVC.getItem = itemsArray![(indexPath!.row)]
+        } else if identifier == "addItemSegue" {
+            print("Add ITEM SEgue!!!!")
+            let addItemVC = segue.destination as! AddItemVC
+            addItemVC.category = self.category
+        } else {
+            print("Error unknown identifier")
+        }
     }
     
     // deletes an item
@@ -62,7 +78,6 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        print("ITEMS VC: \(str)")
         realm = try! Realm()
     }
 
