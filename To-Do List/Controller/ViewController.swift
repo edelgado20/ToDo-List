@@ -18,7 +18,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             return realm?.objects(Category.self)
         }
     }
-    
+    // Items that their category is deleted are added to this list
+    var nullItemsArray: Results<Item> {
+        get {
+            return ((realm?.objects(Item.self).filter("category == nil"))!)
+        }
+    }
+     
     // returns the count number to display
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoriesArray?.count ?? 0
@@ -37,6 +43,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if editingStyle == .delete {
             try! realm?.write {
                 realm?.delete(categoriesArray![indexPath.row])
+                realm?.delete(nullItemsArray)
             }
         }
         tableView.reloadData()
