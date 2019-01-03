@@ -49,6 +49,27 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.reloadData()
     }
     
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let edit = UIContextualAction(style: .normal, title: "Edit") { (action, view, nil) in
+            print("Edit")
+            
+        }
+        edit.backgroundColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
+        
+        let delete = UIContextualAction(style: .destructive, title: "Delete") { (action, view, nil) in
+            print("Delete")
+            try! self.realm?.write {
+                self.realm?.delete(self.categoriesArray![indexPath.row])
+                self.realm?.delete(self.nullItemsArray)
+            }
+            tableView.reloadData()
+        }
+        
+        let config = UISwipeActionsConfiguration(actions: [delete, edit])
+        config.performsFirstActionWithFullSwipe = false
+        return config
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("prepareForSegue")
         guard let identifier = segue.identifier else { return }

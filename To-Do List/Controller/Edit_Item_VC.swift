@@ -19,6 +19,8 @@ class Edit_Item_VC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "Edit \(getItem.name)"
         realm = try! Realm()
     }
     

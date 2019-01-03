@@ -77,7 +77,8 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        self.title = category.name
         realm = try! Realm()
     }
 

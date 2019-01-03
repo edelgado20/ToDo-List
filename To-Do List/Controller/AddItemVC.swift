@@ -34,10 +34,13 @@ class AddItemVC: UIViewController, UITextViewDelegate {
         item.descrip = itemDescripField.text
         item.id += 1
         item.category = self.category
-        
-        try! self.realm.write {
-            self.realm.add(item)
+        // Do not add an item without a name
+        if (item.name != "") {
+            try! self.realm.write {
+                self.realm.add(item)
+            }
         }
+        
         _ = navigationController?.popViewController(animated: true)
     }
     
