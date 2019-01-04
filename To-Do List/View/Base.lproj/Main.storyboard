@@ -137,6 +137,9 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="categoryTextField:" destination="SdO-Us-piD" eventType="editingChanged" id="Kqx-rJ-caI"/>
+                                </connections>
                             </textField>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -145,12 +148,13 @@
                     <navigationItem key="navigationItem" title="Edit Category" id="7yF-pz-Ca2">
                         <barButtonItem key="rightBarButtonItem" systemItem="save" id="HFn-9h-yeV">
                             <connections>
-                                <action selector="saveCategoryName:" destination="gfG-ji-ZdD" id="mUo-d2-9bh"/>
+                                <action selector="saveEditName:" destination="SdO-Us-piD" id="KlF-x2-RgB"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="editCategoryField" destination="nDk-YB-oTv" id="4Ti-fF-Fja"/>
+                        <outlet property="saveButton" destination="HFn-9h-yeV" id="PuC-3p-Pl6"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gfG-ji-ZdD" userLabel="First Responder" sceneMemberID="firstResponder"/>
