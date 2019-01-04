@@ -19,6 +19,7 @@
 		3F3EC734211D006400BFA5E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3F3EC733211D006400BFA5E3 /* Assets.xcassets */; };
 		3F3EC737211D006400BFA5E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3F3EC735211D006400BFA5E3 /* LaunchScreen.storyboard */; };
 		3F750E1A2120FF1F00CCEC62 /* Edit_Item_VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */; };
+		469BD9E121DEA9F100B8835A /* EditCategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		3F3EC736211D006400BFA5E3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3F3EC738211D006400BFA5E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edit_Item_VC.swift; sourceTree = "<group>"; };
+		469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCategoryVC.swift; sourceTree = "<group>"; };
 		FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_To_Do_List.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -99,6 +101,7 @@
 				3F17902F211DAC40000BC603 /* AddCategoryVC.swift */,
 				3F179031211DACFE000BC603 /* ItemsVC.swift */,
 				3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */,
+				469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */,
 				3F179033211DAD8A000BC603 /* AddItemVC.swift */,
 				3F3EC72E211D006100BFA5E3 /* ViewController.swift */,
 			);
@@ -248,6 +251,7 @@
 			files = (
 				3F179034211DAD8A000BC603 /* AddItemVC.swift in Sources */,
 				3F750E1A2120FF1F00CCEC62 /* Edit_Item_VC.swift in Sources */,
+				469BD9E121DEA9F100B8835A /* EditCategoryVC.swift in Sources */,
 				3F179030211DAC40000BC603 /* AddCategoryVC.swift in Sources */,
 				3F3EC72F211D006100BFA5E3 /* ViewController.swift in Sources */,
 				3F3EC72D211D006100BFA5E3 /* AppDelegate.swift in Sources */,

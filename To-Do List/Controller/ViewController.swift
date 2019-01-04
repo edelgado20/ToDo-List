@@ -51,8 +51,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let edit = UIContextualAction(style: .normal, title: "Edit") { (action, view, nil) in
-            print("Edit")
-            
+            let cell = tableView.cellForRow(at: indexPath)
+            self.performSegue(withIdentifier: "showEditCategory", sender: cell)
         }
         edit.backgroundColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
         
@@ -80,6 +80,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             let indexPath = tableView.indexPath(for: cell)!
             let vc = segue.destination as! ItemsVC
             vc.category = categoriesArray![indexPath.row]
+            
+        case "showEditCategory":
+            let cell = sender as! UITableViewCell
+            let indexPath = tableView.indexPath(for: cell)
+            let vc = segue.destination as! EditCategoryVC
+            vc.getCategory = categoriesArray![(indexPath?.row)!]
+            
         default:
             break
         }

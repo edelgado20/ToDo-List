@@ -59,7 +59,6 @@
                         <viewLayoutGuide key="safeArea" id="yJF-4w-8EA"/>
                     </view>
                     <navigationItem key="navigationItem" title="Categories" id="RdV-yt-4og">
-                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="EvV-oV-Qdj"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="5Eb-vZ-NyQ">
                             <connections>
                                 <segue destination="GnS-X7-Izt" kind="show" identifier="addCategoryTransition" id="E5b-wU-23f"/>
@@ -68,6 +67,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="bfZ-NP-VGh" id="XWu-hi-cu3"/>
+                        <segue destination="SdO-Us-piD" kind="show" identifier="showEditCategory" id="zRf-Zb-ZcF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F4y-Jz-zgq" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -115,6 +115,47 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Ec-kz-cwC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1758" y="606"/>
+        </scene>
+        <!--Edit Category-->
+        <scene sceneID="334-v7-wLC">
+            <objects>
+                <viewController storyboardIdentifier="editCategoryVC" id="SdO-Us-piD" customClass="EditCategoryVC" customModule="To_Do_List" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="VyJ-Y5-Qqa">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Category Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vFg-ag-aCU">
+                                <rect key="frame" x="16" y="86" width="343" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="nDk-YB-oTv">
+                                <rect key="frame" x="16" y="117" width="343" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="wRN-OQ-l3f"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Edit Category" id="7yF-pz-Ca2">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="HFn-9h-yeV">
+                            <connections>
+                                <action selector="saveCategoryName:" destination="gfG-ji-ZdD" id="mUo-d2-9bh"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="editCategoryField" destination="nDk-YB-oTv" id="4Ti-fF-Fja"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gfG-ji-ZdD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1743.2" y="-326.08695652173918"/>
         </scene>
         <!--ItemsVC-->
         <scene sceneID="9PV-Sx-dKl">
@@ -263,7 +304,7 @@
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                             <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uTU-BF-XvZ">
-                                <rect key="frame" x="16" y="145" width="343" height="30"/>
+                                <rect key="frame" x="9" y="145" width="343" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
