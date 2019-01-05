@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class AddCategoryVC: UIViewController, UITextFieldDelegate{
+class AddCategoryVC: UIViewController {
     
     var realm: Realm!
 
@@ -19,19 +19,9 @@ class AddCategoryVC: UIViewController, UITextFieldDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         realm = try! Realm()
-        categoryNameTextField.delegate = self
         doneButton.isEnabled = false
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if (textField.text?.isEmpty)!{
-            doneButton.isEnabled = true
-        }
-        else{
-            doneButton.isEnabled = false
-        }
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -47,4 +37,13 @@ class AddCategoryVC: UIViewController, UITextFieldDelegate{
         
         _ = navigationController?.popViewController(animated: true)
     }
+    
+    @IBAction func categoryNameTextField(_ sender: Any) {
+        if categoryNameTextField.text == "" {
+            doneButton.isEnabled = false
+        } else {
+            doneButton.isEnabled = true
+        }
+    }
+    
 }

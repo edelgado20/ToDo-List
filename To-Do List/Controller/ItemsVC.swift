@@ -49,7 +49,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else { return }
-        print("preparing for segue to edit item vc")
+   
         if identifier == "edit_Item_Segue" {
             let cell = sender as! UITableViewCell
             let indexPath = TABLEVIEW.indexPath(for: cell)
@@ -57,7 +57,6 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             print("value = \(itemsArray![indexPath!.row])")
             editItemVC.getItem = itemsArray![(indexPath!.row)]
         } else if identifier == "addItemSegue" {
-            print("Add ITEM SEgue!!!!")
             let addItemVC = segue.destination as! AddItemVC
             addItemVC.category = self.category
         } else {
@@ -84,7 +83,6 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -92,7 +90,12 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     @objc func checkboxClicked(_ sender: UIButton){
-        sender.isSelected = !sender.isSelected
+        //sender.isSelected = !sender.isSelected
+        if sender.isSelected {
+            sender.isSelected = false
+        } else {
+            sender.isSelected = true
+        }
     }
 
 }
