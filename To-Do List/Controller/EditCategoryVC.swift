@@ -33,11 +33,7 @@ class EditCategoryVC: UIViewController {
     }
     
     @IBAction func categoryTextField(_ sender: Any) {
-        if editCategoryField.text == "" {
-            saveButton.isEnabled = false
-        } else {
-            saveButton.isEnabled = true
-        }
+        saveButton.isEnabled = editCategoryField.text != ""
     }
     
     @IBAction func saveEditName(_ sender: Any) {

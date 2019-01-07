@@ -44,6 +44,8 @@ class AddCategoryVC: UIViewController {
         } else {
             doneButton.isEnabled = true
         }
+        
+        doneButton.isEnabled = categoryNameTextField.text != ""
     }
     
 }

@@ -248,6 +248,9 @@
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <action selector="itemNameTextField:" destination="NZ2-68-Bzq" eventType="editingChanged" id="Nws-3a-D3l"/>
+                                </connections>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uwN-Df-L54">
                                 <rect key="frame" x="19" y="184" width="126" height="28"/>
@@ -267,10 +270,17 @@
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="FnN-ZH-riP"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Edit Item" id="yMX-8a-fQc"/>
+                    <navigationItem key="navigationItem" title="Edit Item" id="yMX-8a-fQc">
+                        <barButtonItem key="rightBarButtonItem" systemItem="save" id="SN8-nR-PAK">
+                            <connections>
+                                <action selector="saveEditItem:" destination="NZ2-68-Bzq" id="Dww-dQ-0eO"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="editDescription" destination="nhb-HC-Rcb" id="JAg-VP-Q5J"/>
                         <outlet property="editName" destination="mNl-po-U57" id="PRp-vE-daV"/>
+                        <outlet property="saveItemButton" destination="SN8-nR-PAK" id="Lft-j8-k73"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="epw-zk-alo" userLabel="First Responder" sceneMemberID="firstResponder"/>

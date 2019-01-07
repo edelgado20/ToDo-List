@@ -14,6 +14,7 @@ class Edit_Item_VC: UIViewController {
     
     @IBOutlet weak var editName: UITextField!
     @IBOutlet weak var editDescription: UITextView!
+    @IBOutlet weak var saveItemButton: UIBarButtonItem!
     
     var getItem = Item()
 
@@ -25,22 +26,27 @@ class Edit_Item_VC: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
         editName.text = getItem.name
         editDescription.text = getItem.descrip
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    @IBAction func saveEditItem(_ sender: Any) {
         try! self.realm?.write {
             getItem.name = editName.text ?? ""
             getItem.descrip = editDescription.text
         }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        
+        navigationController?.popViewController(animated: true)
     }
     
-
-  
+    @IBAction func itemNameTextField(_ sender: Any) {
+        saveItemButton.isEnabled = editName.text != ""
+    }
+    
 }

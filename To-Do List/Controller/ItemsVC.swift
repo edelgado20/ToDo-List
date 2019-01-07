@@ -39,6 +39,19 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    //Allows reordering of cells
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        let cell = itemsArray?[sourceIndexPath.row]
+        try! realm?.write {
+            realm?.delete(itemsArray![sourceIndexPath.row])
+            realm?.add(cell!)
+        }
+    }
+    
     // segue to edit view controller
     /*func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = storyboard?.instantiateViewController(withIdentifier: "editItem_vc")
@@ -91,11 +104,15 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     @objc func checkboxClicked(_ sender: UIButton){
         //sender.isSelected = !sender.isSelected
+        
         if sender.isSelected {
+            
             sender.isSelected = false
         } else {
+            
             sender.isSelected = true
         }
+        
     }
 
 }
