@@ -11,7 +11,7 @@ import RealmSwift
 import Alamofire
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
-    
+    private let networkingClient = NetworkingClient()
     var realm: Realm? = nil
     @IBOutlet weak var tableView: UITableView!
     var categoriesArray: Results<Category>? {
@@ -98,6 +98,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         realm = try! Realm()
         print(Realm.Configuration.defaultConfiguration.fileURL)
+        networkingClient.getCategories()
     }
     
     // reload data to view all data in table view

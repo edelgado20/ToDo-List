@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 
 class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    
+    private let networkingClient = NetworkingClient()
     @IBOutlet weak var TABLEVIEW: UITableView!
     
     var realm: Realm? = nil
@@ -79,6 +79,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         self.title = category.name
         realm = try! Realm()
+        networkingClient.getItems()
     }
 
     override func didReceiveMemoryWarning() {
