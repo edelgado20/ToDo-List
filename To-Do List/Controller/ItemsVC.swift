@@ -19,7 +19,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var itemsArray: Results<Item>? {
         get {
             let predicate = NSPredicate(format: "category = %@", category)
-            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "isSelected")
+            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "completed")
         }
     }
     
@@ -96,7 +96,7 @@ extension ItemsVC: ItemCellDelegate {
         
         let index = TABLEVIEW.indexPath(for: cell)
         try! realm?.write {
-            itemsArray?[(index?.row)!].isSelected = !(itemsArray?[(index?.row)!].isSelected ?? false)
+            itemsArray?[(index?.row)!].completed = !(itemsArray?[(index?.row)!].completed ?? false)
         }
         TABLEVIEW.reloadData()
     }

@@ -36,7 +36,7 @@ class ItemCell: UITableViewCell {
         self.textLabel?.text = item.name
         self.accessoryType = .disclosureIndicator
         
-        checkboxButton.isSelected = item.isSelected
+        checkboxButton.isSelected = item.completed
     }
     
 

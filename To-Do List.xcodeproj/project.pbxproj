@@ -101,10 +101,10 @@
 			isa = PBXGroup;
 			children = (
 				3F17902F211DAC40000BC603 /* AddCategoryVC.swift */,
+				469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */,
 				3F179031211DACFE000BC603 /* ItemsVC.swift */,
 				468A566921E3E6150048CD71 /* ItemCell.swift */,
 				3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */,
-				469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */,
 				3F179033211DAD8A000BC603 /* AddItemVC.swift */,
 				3F3EC72E211D006100BFA5E3 /* ViewController.swift */,
 			);

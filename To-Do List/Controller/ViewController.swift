@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import Alamofire
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
     
