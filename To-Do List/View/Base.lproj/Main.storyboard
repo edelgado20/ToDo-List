@@ -176,7 +176,7 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="g28-Um-SoM">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="g28-Um-SoM" customClass="ItemCell" customModule="To_Do_List" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="g28-Um-SoM" id="T5R-ps-zG5">
@@ -189,10 +189,14 @@
                                                     <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
                                                     <state key="normal" image="Checkmarkempty"/>
                                                     <state key="selected" title="checkedButton" image="Checkmark"/>
+                                                    <connections>
+                                                        <action selector="checkboxTapped:" destination="g28-Um-SoM" eventType="touchUpInside" id="g1e-F0-KTu"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="checkboxButton" destination="xaq-eJ-ThD" id="AKK-n0-5hg"/>
                                             <segue destination="NZ2-68-Bzq" kind="push" identifier="edit_Item_Segue" id="svk-vY-PlB"/>
                                         </connections>
                                     </tableViewCell>

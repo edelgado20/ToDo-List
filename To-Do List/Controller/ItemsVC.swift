@@ -19,7 +19,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     var itemsArray: Results<Item>? {
         get {
             let predicate = NSPredicate(format: "category = %@", category)
-            return realm?.objects(Item.self).filter(predicate)
+            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "isSelected")
         }
     }
     
@@ -28,30 +28,17 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ TABLEVIEW: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = TABLEVIEW.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = itemsArray?[indexPath.row].name
-        cell.accessoryType = .disclosureIndicator
-        
-        if let btnChk = cell.contentView.viewWithTag(2) as? UIButton {
-            btnChk.addTarget(self, action: #selector(checkboxClicked(_ :)), for: .touchUpInside)
+        let cell = TABLEVIEW.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ItemCell
+        guard let item = itemsArray?[indexPath.row] else {
+            return cell
         }
+        
+        cell.setUpCell(item: item)
+        cell.delegate = self
         
         return cell
     }
-    
-    //Allows reordering of cells
-    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let cell = itemsArray?[sourceIndexPath.row]
-        try! realm?.write {
-            realm?.delete(itemsArray![sourceIndexPath.row])
-            realm?.add(cell!)
-        }
-    }
-    
+
     // segue to edit view controller
     /*func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let controller = storyboard?.instantiateViewController(withIdentifier: "editItem_vc")
@@ -101,18 +88,17 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         TABLEVIEW.reloadData() //reloads any new item into the table view(display)
     }
-    
-    @objc func checkboxClicked(_ sender: UIButton){
-        //sender.isSelected = !sender.isSelected
-        
-        if sender.isSelected {
-            
-            sender.isSelected = false
-        } else {
-            
-            sender.isSelected = true
-        }
-        
-    }
+}
 
+extension ItemsVC: ItemCellDelegate {
+    
+    func didTapCheckbox(cell: UITableViewCell) {
+        
+        let index = TABLEVIEW.indexPath(for: cell)
+        try! realm?.write {
+            itemsArray?[(index?.row)!].isSelected = !(itemsArray?[(index?.row)!].isSelected ?? false)
+        }
+        TABLEVIEW.reloadData()
+    }
+    
 }
