@@ -1,9 +1,9 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
 
 target 'To-Do List' do
   use_frameworks!
 
     pod 'RealmSwift'
-    pod 'Alamofire', '~> 4.7'
+    pod 'Alamofire', '~> 5.0.0.beta.1'
 
 end
