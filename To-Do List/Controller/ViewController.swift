@@ -13,19 +13,16 @@ import Alamofire
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
     private let networkingClient = NetworkingClient()
     var realm: Realm? = nil
+    var token: NotificationToken?
     @IBOutlet weak var tableView: UITableView!
-    var categoriesArray: Results<Category>? {
-        get {
-            return realm?.objects(Category.self)
-        }
-    }
+    lazy var categoriesArray: Results<Category>? = {
+        return realm?.objects(Category.self)
+    }()
     // Items that their category is deleted are added to this list
-    var nullItemsArray: Results<Item> {
-        get {
-            return ((realm?.objects(Item.self).filter("category == nil"))!)
-        }
-    }
-     
+//    var nullItemsArray: Results<Item> {
+//        return ((realm?.objects(Item.self).filter("category == nil"))!)
+//    }
+    
     // returns the count number to display
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoriesArray?.count ?? 0
@@ -39,17 +36,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell
     }
     
-    //function to delete a category
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            try! realm?.write {
-                realm?.delete(categoriesArray![indexPath.row])
-                realm?.delete(nullItemsArray)
-            }
-        }
-        tableView.reloadData()
-    }
-    
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let edit = UIContextualAction(style: .normal, title: "Edit") { (action, view, nil) in
             let cell = tableView.cellForRow(at: indexPath)
@@ -57,13 +43,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         edit.backgroundColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
         
-        let delete = UIContextualAction(style: .destructive, title: "Delete") { (action, view, nil) in
-            print("Delete")
-            try! self.realm?.write {
-                self.realm?.delete(self.categoriesArray![indexPath.row])
-                self.realm?.delete(self.nullItemsArray)
+        let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak realm, weak categoriesArray, weak token, weak self] (action, view, nil) in
+            guard let realm = realm, let categoriesArray = categoriesArray, let self = self else {
+                return
             }
-            tableView.reloadData()
+            print("Delete")
+            token?.invalidate()
+            try? realm.write {
+                let category = categoriesArray[indexPath.row]
+                let itemsToDelete = realm.objects(Item.self).filter("category.id == \"\(category.id)\"")
+                realm.delete(itemsToDelete)
+                realm.delete(category)
+            }
+            self.subscribeCategories()
+            //tableView.reloadData()
         }
         
         let config = UISwipeActionsConfiguration(actions: [delete, edit])
@@ -73,23 +66,45 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         print("prepareForSegue")
-        guard let identifier = segue.identifier else { return }
+        //guard let identifier = segue.identifier else { return }
         
-        switch identifier {
-        case "showItemsVC":
+        switch segue.destination {
+        case let vc as ItemsVC:
             let cell = sender as! UITableViewCell
             let indexPath = tableView.indexPath(for: cell)!
-            let vc = segue.destination as! ItemsVC
             vc.category = categoriesArray![indexPath.row]
             
-        case "showEditCategory":
+        case let vc as EditCategoryVC:
             let cell = sender as! UITableViewCell
             let indexPath = tableView.indexPath(for: cell)
-            let vc = segue.destination as! EditCategoryVC
             vc.getCategory = categoriesArray![(indexPath?.row)!]
             
         default:
             break
+        }
+    }
+    
+    private func subscribeCategories() {
+        token = categoriesArray?.observe { [weak tableView] (changes: RealmCollectionChange) in
+            guard let tableView = tableView else { return }
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                tableView.reloadData()
+            case .update(_, let deletions, let insertions, let modifications):
+                // Query results have changed, so apply them to the UITableView
+                tableView.beginUpdates()
+                tableView.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0)}),
+                                     with: .automatic)
+                tableView.reloadRows(at: modifications.map({ IndexPath(row: $0, section: 0) }),
+                                     with: .automatic)
+                tableView.endUpdates()
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                print("Error: \(error.localizedDescription)")
+            }
         }
     }
     
@@ -98,19 +113,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         realm = try! Realm()
         print(Realm.Configuration.defaultConfiguration.fileURL)
-        networkingClient.getCategories()
+        
+        subscribeCategories()
+        
+        networkingClient.getCategories { (result: Result<[Category]>) -> Void in
+            switch result {
+            case .success(let categories):
+                print("Categories: \(categories)")
+                try? self.realm?.write {
+                    self.realm?.add(categories, update: true)
+                }
+            case .failure(let error):
+                print("Error: \(error.localizedDescription)")
+            }
+        }
     }
-    
-    // reload data to view all data in table view
-    override func viewWillAppear(_ animated: Bool) {
-        tableView.reloadData()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
 
 }
 

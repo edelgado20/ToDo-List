@@ -11,20 +11,25 @@ import Alamofire
 
 class NetworkingClient {
     
-    func getCategories() {
-        AF.request("https://api.fusionofideas.com/todo/getCategories.php").validate().responseJSON { response in
+    func getCategories(completion: @escaping (Result<[Category]>) -> Void) {
+        AF.request("https://api.fusionofideas.com/todo/getCategories.php").validate().responseData { response in
             print("Request: \(String(describing: response.request))")
             print("Response: \(String(describing: response.response))")
             print("Result: \(response.result)")
-
-            if let json = response.result.value {
-                print("JSON: \(json)")
-            }
-
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)")
-            }
             
+            switch response.result {
+            case .success(let data):
+                do {
+                    let container = try JSONDecoder().decode(CategoryContainer.self, from: data)
+                    completion(.success(container.content))
+                } catch(let error) {
+                    return completion(.failure(error))
+                }
+                
+            case .failure(let error):
+                return completion(.failure(error))
+            }
+           
         }
     }
     

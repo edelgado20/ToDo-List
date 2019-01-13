@@ -15,11 +15,8 @@ class Item: Object {
     @objc dynamic var name: String = ""
     @objc dynamic var descrip: String = ""
     @objc dynamic var category: Category?
+    //@objc dynamic var categoryId: String = ""
     @objc dynamic var completed: Bool = false 
-    
-//    @objc dynamic var c_id: Int = 0
-//    @objc dynamic var dueDate: Date
-//    @objc dynamic var int: Int = 0
     
     
     

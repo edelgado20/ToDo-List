@@ -9,7 +9,12 @@
 import Foundation
 import RealmSwift
 
-class Category: Object {
+struct CategoryContainer: Codable {
+    let status: String
+    let content: [Category]
+}
+
+class Category: Object, Codable {
 
     @objc dynamic var name: String = ""
     @objc dynamic var id: String = UUID().uuidString
@@ -18,5 +23,9 @@ class Category: Object {
         return "id"
     }
     
+//    enum CodingKeys: String, CodingKey {
+//        case name = "name"
+//        case id = "id"
+//    }
     
 }
