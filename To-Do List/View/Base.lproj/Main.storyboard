@@ -202,7 +202,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xaq-eJ-ThD">
-                                                    <rect key="frame" x="312" y="7" width="30" height="30"/>
+                                                    <rect key="frame" x="255" y="7" width="82" height="29.5"/>
                                                     <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="18"/>
                                                     <state key="normal" image="Checkmarkempty"/>
                                                     <state key="selected" title="checkedButton" image="Checkmark"/>
@@ -212,8 +212,10 @@
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="trailing" secondItem="xaq-eJ-ThD" secondAttribute="trailing" id="dfs-UZ-dhW"/>
-                                                <constraint firstItem="xaq-eJ-ThD" firstAttribute="centerY" secondItem="T5R-ps-zG5" secondAttribute="centerY" id="ga0-pJ-Gro"/>
+                                                <constraint firstItem="xaq-eJ-ThD" firstAttribute="leading" secondItem="T5R-ps-zG5" secondAttribute="leading" constant="255" id="DMM-lj-jmn"/>
+                                                <constraint firstAttribute="trailing" secondItem="xaq-eJ-ThD" secondAttribute="trailing" constant="5" id="Dig-ha-DZA"/>
+                                                <constraint firstItem="xaq-eJ-ThD" firstAttribute="top" secondItem="T5R-ps-zG5" secondAttribute="top" constant="7" id="OWL-7G-f65"/>
+                                                <constraint firstAttribute="bottom" secondItem="xaq-eJ-ThD" secondAttribute="bottom" constant="7" id="sMz-gF-Mgt"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
