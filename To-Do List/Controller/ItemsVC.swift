@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import Alamofire
 
 class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private let networkingClient = NetworkingClient()
@@ -79,11 +80,19 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         self.title = category.name
         realm = try! Realm()
-        networkingClient.getItems()
-    }
+        
+        print("Items VC before fetching getItems")
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+        networkingClient.getItems { (result: Result<[Item]>) -> Void in
+            switch result {
+            case .success(let items):
+                print("hello items")
+                //print("Items: \(items)")
+            case .failure(let error):
+                print("Error: \(error.localizedDescription)")
+            }
+        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {

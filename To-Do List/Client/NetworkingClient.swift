@@ -13,10 +13,6 @@ class NetworkingClient {
     
     func getCategories(completion: @escaping (Result<[Category]>) -> Void) {
         AF.request("https://api.fusionofideas.com/todo/getCategories.php").validate().responseData { response in
-            print("Request: \(String(describing: response.request))")
-            print("Response: \(String(describing: response.response))")
-            print("Result: \(response.result)")
-            
             switch response.result {
             case .success(let data):
                 do {
@@ -29,28 +25,28 @@ class NetworkingClient {
             case .failure(let error):
                 return completion(.failure(error))
             }
-           
         }
     }
     
-    func getItems() {
-        AF.request("https://api.fusionofideas.com/todo/getItems.php").validate().responseJSON { response in
-            print("Request: \(String(describing: response.request))")
-            print("Response: \(String(describing: response.response))")
-            print("Result: \(response.result)")
-            
-            if let json = response.result.value {
-                print("JSON: \(json)")
+    func getItems(completion: @escaping (Result<[Item]>) -> Void) {
+        AF.request("https://api.fusionofideas.com/todo/getItems.php").validate().responseData { response in
+            switch response.result {
+            case .success(let data):
+                do {
+                    let container = try JSONDecoder().decode(ItemContainer.self, from: data)
+                    //dump(container)
+                    completion(.success(container.content))
+                } catch(let error) {
+                    return completion(.failure(error))
+                }
+                
+            case .failure(let error):
+                return completion(.failure(error))
             }
-            
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)")
-            }
-            
         }
     }
     
-    func addCategory(name: String) {
+    /*func addCategory(name: String) {
         AF.request("https://api.fusionofideas.com/todo/addCategory.php", method: .post, parameters: name).validate().response { response in
             switch response.result {
             case .failure(let err):
@@ -79,6 +75,7 @@ class NetworkingClient {
     
     func deleteItem(id: Int) {
         AF.request("https://api.fusionofideas.com/todo/deleteItem.php", method: .delete, parameters: id)
-    }
+     
+    }*/
     
 }

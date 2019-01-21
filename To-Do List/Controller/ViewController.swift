@@ -84,6 +84,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
+    deinit {
+        token?.invalidate()
+    }
+    
     private func subscribeCategories() {
         token = categoriesArray?.observe { [weak tableView] (changes: RealmCollectionChange) in
             guard let tableView = tableView else { return }
@@ -127,6 +131,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 print("Error: \(error.localizedDescription)")
             }
         }
+        
+//        networkingClient.getItems { (result: Result<[Item]>) -> Void in
+//            switch result {
+//            case .success(let items):
+//                print("Items: \(items)")
+//            case .failure(let error):
+//                print("Error: \(error.localizedDescription)")
+//            }
+//        }
+
+
+
     }
 
 }
