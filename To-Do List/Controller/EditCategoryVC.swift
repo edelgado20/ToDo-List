@@ -4,7 +4,6 @@
 //
 //  Created by COFEBE, inc. on 1/3/19.
 //  Copyright © 2019 Edgar Delgado. All rights reserved.
-//
 
 import UIKit
 import RealmSwift

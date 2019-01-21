@@ -8,10 +8,9 @@
 
 import UIKit
 import RealmSwift
-import Alamofire
 
 class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    //private let networkingClient = NetworkingClient()
+
     @IBOutlet weak var TABLEVIEW: UITableView!
     
     var realm: Realm? = nil
@@ -78,24 +77,14 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.title = category.name
         realm = try! Realm()
-        
-        //print("Items VC before fetching getItems")
-
-//        networkingClient.getItems { (result: Result<[Item]>) -> Void in
-//            switch result {
-//            case .success(let items):
-//                print("hello items")
-//                //print("Items: \(items)")
-//            case .failure(let error):
-//                print("Error: \(error.localizedDescription)")
-//            }
-//        }
 
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+
+        self.title = category.name
         TABLEVIEW.reloadData() //reloads any new item into the table view(display)
     }
 }

@@ -8,20 +8,15 @@
 
 import UIKit
 import RealmSwift
-import Alamofire
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
-    //private let networkingClient = NetworkingClient()
+
     var realm: Realm? = nil
     var token: NotificationToken?
     @IBOutlet weak var tableView: UITableView!
     lazy var categoriesArray: Results<Category>? = {
         return realm?.objects(Category.self)
     }()
-    // Items that their category is deleted are added to this list
-//    var nullItemsArray: Results<Item> {
-//        return ((realm?.objects(Item.self).filter("category == nil"))!)
-//    }
     
     // returns the count number to display
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -44,18 +39,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         edit.backgroundColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
         
         let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak realm, weak categoriesArray, weak token, weak self] (action, view, nil) in
-            guard let realm = realm, let categoriesArray = categoriesArray, let self = self else {
-                return
-            }
+            guard let realm = realm, let categoriesArray = categoriesArray, let self = self else { return }
             print("Delete")
-            token?.invalidate()
+            //token?.invalidate()
             try? realm.write {
                 let category = categoriesArray[indexPath.row]
                 let itemsToDelete = realm.objects(Item.self).filter("category.id == \"\(category.id)\"")
                 realm.delete(itemsToDelete)
                 realm.delete(category)
             }
-            self.subscribeCategories()
+            //self.subscribeCategories()
+
             //tableView.reloadData()
         }
         
@@ -88,7 +82,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         token?.invalidate()
     }
     
-    private func subscribeCategories() {
+    private func reloadCategories() {
         token = categoriesArray?.observe { [weak tableView] (changes: RealmCollectionChange) in
             guard let tableView = tableView else { return }
             switch changes {
@@ -117,32 +111,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         realm = try! Realm()
         print(Realm.Configuration.defaultConfiguration.fileURL)
-        
-        subscribeCategories()
-        
-//        networkingClient.getCategories { (result: Result<[Category]>) -> Void in
-//            switch result {
-//            case .success(let categories):
-//                print("Categories: \(categories)")
-//                try? self.realm?.write {
-//                    self.realm?.add(categories, update: true)
-//                }
-//            case .failure(let error):
-//                print("Error: \(error.localizedDescription)")
-//            }
-//        }
+    }
 
-//        networkingClient.getItems { (result: Result<[Item]>) -> Void in
-//            switch result {
-//            case .success(let items):
-//                print("Items: \(items)")
-//            case .failure(let error):
-//                print("Error: \(error.localizedDescription)")
-//            }
-//        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
 
-
-
+        tableView.reloadData()
     }
 
 }
