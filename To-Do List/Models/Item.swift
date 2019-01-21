@@ -9,12 +9,12 @@
 import Foundation
 import RealmSwift
 
-struct ItemContainer: Codable {
-    let status: String
-    let content: [Item]
-}
+//struct ItemContainer: Codable {
+//    let status: String
+//    let content: [Item]
+//}
 
-class Item: Object, Codable {
+class Item: Object {
     
     @objc dynamic var id: Int = Int(arc4random_uniform(100) + 1)
     @objc dynamic var name: String = ""
@@ -28,33 +28,33 @@ class Item: Object, Codable {
 //        case content
 //    }
 
-    enum ContentKeys: String, CodingKey {
-        case id
-        case name
-        case descrip = "description"
-        case categoryID = "category_id"
-        case completed
-    }
+//    enum ContentKeys: String, CodingKey {
+//        case id
+//        case name
+//        case descrip = "description"
+//        case categoryID = "category_id"
+//        case completed
+//    }
 
-    required convenience init(from decoder: Decoder) throws {
-        self.init()
+//    required convenience init(from decoder: Decoder) throws {
+//        self.init()
         //let container = try decoder.container(keyedBy: RootKeys.self)
 //        var status = try container.nestedUnkeyedContainer(forKey: .status)
         
-        let container = try decoder.container(keyedBy: ContentKeys.self)
+//        let container = try decoder.container(keyedBy: ContentKeys.self)
+//
+//        let id = try container.decode(String.self, forKey: .id)
+//        let name = try container.decode(String.self, forKey: .name)
+//        let descrip = try container.decode(String.self, forKey: .descrip)
+//        let categoryID = try container.decode(String.self, forKey: .categoryID)
+//        let completed = try container.decode(String.self, forKey: .completed)
+//        print("ID: \(id)")
+//        print("Name: \(name)")
+//        print("Descrip: \(descrip)")
+//        print("CategoryID: \(categoryID)")
+//        print("Completed: \(completed)")
+//    }
 
-        let id = try container.decode(String.self, forKey: .id)
-        let name = try container.decode(String.self, forKey: .name)
-        let descrip = try container.decode(String.self, forKey: .descrip)
-        let categoryID = try container.decode(String.self, forKey: .categoryID)
-        let completed = try container.decode(String.self, forKey: .completed)
-        print("ID: \(id)")
-        print("Name: \(name)")
-        print("Descrip: \(descrip)")
-        print("CategoryID: \(categoryID)")
-        print("Completed: \(completed)")
-    }
-    
     //func encode(to encoder: Encoder) throws {
 //        var container = encoder.container(keyedBy: .self)
 //

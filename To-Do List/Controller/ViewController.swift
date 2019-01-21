@@ -11,7 +11,7 @@ import RealmSwift
 import Alamofire
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
-    private let networkingClient = NetworkingClient()
+    //private let networkingClient = NetworkingClient()
     var realm: Realm? = nil
     var token: NotificationToken?
     @IBOutlet weak var tableView: UITableView!
@@ -120,18 +120,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         subscribeCategories()
         
-        networkingClient.getCategories { (result: Result<[Category]>) -> Void in
-            switch result {
-            case .success(let categories):
-                print("Categories: \(categories)")
-                try? self.realm?.write {
-                    self.realm?.add(categories, update: true)
-                }
-            case .failure(let error):
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-        
+//        networkingClient.getCategories { (result: Result<[Category]>) -> Void in
+//            switch result {
+//            case .success(let categories):
+//                print("Categories: \(categories)")
+//                try? self.realm?.write {
+//                    self.realm?.add(categories, update: true)
+//                }
+//            case .failure(let error):
+//                print("Error: \(error.localizedDescription)")
+//            }
+//        }
+
 //        networkingClient.getItems { (result: Result<[Item]>) -> Void in
 //            switch result {
 //            case .success(let items):

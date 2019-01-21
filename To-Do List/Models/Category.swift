@@ -9,10 +9,10 @@
 import Foundation
 import RealmSwift
 
-struct CategoryContainer: Codable {
-    let status: String
-    let content: [Category]
-}
+//struct CategoryContainer: Codable {
+//    let status: String
+//    let content: [Category]
+//}
 
 class Category: Object, Codable {
 
@@ -22,10 +22,5 @@ class Category: Object, Codable {
     override static func primaryKey() -> String? {
         return "id"
     }
-    
-//    enum CodingKeys: String, CodingKey {
-//        case name = "name"
-//        case id = "id"
-//    }
     
 }
