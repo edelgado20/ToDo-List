@@ -4,16 +4,16 @@
 //
 //  Created by Edgar Delgado on 8/9/18.
 //  Copyright © 2018 Edgar Delgado. All rights reserved.
-//
 
 import UIKit
 import RealmSwift
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
+    @IBOutlet weak var tableView: UITableView!
+
     var realm: Realm? = nil
     var token: NotificationToken?
-    @IBOutlet weak var tableView: UITableView!
     lazy var categoriesArray: Results<Category>? = {
         return realm?.objects(Category.self)
     }()
@@ -25,9 +25,13 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     // loops through the table view and display every cell 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = categoriesArray![indexPath.row].name
-        cell.accessoryType = .disclosureIndicator // add the disclosure indicater(>) in each cell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! CategoryCell
+        guard let category = categoriesArray?[indexPath.row] else {
+            return cell
+        }
+
+        cell.setCategoryCell(category: category)
+        //cell.textLabel?.text = categoriesArray![indexPath.row].name
         return cell
     }
     
@@ -48,9 +52,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 realm.delete(itemsToDelete)
                 realm.delete(category)
             }
-            //self.subscribeCategories()
 
-            //tableView.reloadData()
+            tableView.reloadData()
         }
         
         let config = UISwipeActionsConfiguration(actions: [delete, edit])

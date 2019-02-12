@@ -15,6 +15,8 @@ protocol ItemCellDelegate: class {
 class ItemCell: UITableViewCell {
     
     @IBOutlet weak var checkboxButton: UIButton!
+    @IBOutlet weak var itemLabel: UILabel!
+
     weak var delegate: ItemCellDelegate?
     
     override func awakeFromNib() {
@@ -33,10 +35,11 @@ class ItemCell: UITableViewCell {
     }
     
     func setUpCell(item: Item){
-        self.textLabel?.text = item.name
+        itemLabel.text = item.name
         self.accessoryType = .disclosureIndicator
         
         checkboxButton.isSelected = item.completed
+        
     }
     
 

@@ -39,7 +39,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Now that we've told Realm how to handle the schema change, opening the file
         // will automatically perform the migration
         let realm = try! Realm()
-        
+
+        //Changes the navigation bar color
+        let navigationBarAppearace = UINavigationBar.appearance()
+        navigationBarAppearace.tintColor = UIColor.white
+        navigationBarAppearace.barTintColor = UIColor.init(hexString: "#00A6CC") //Turquoise Surf
+        navigationBarAppearace.titleTextAttributes = [NSAttributedStringKey.foregroundColor: UIColor.white]
+        //Changes the status bar color (e.g provider, time, battery life, wifi)
+        UIApplication.shared.statusBarStyle = .lightContent
+
         return true
     }
 
