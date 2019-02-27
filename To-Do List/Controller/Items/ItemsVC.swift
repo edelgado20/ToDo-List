@@ -35,19 +35,7 @@ class ItemsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
         cell.setUpCell(item: item)
         cell.delegate = self
-        
-        //slate gray #6F8695
-        //pale aqua #BCCFD6
-        //silver sand #C1C7C8
-        //ucla blue #55778E
-        if item.completed {
-            cell.backgroundColor = UIColor.init(hexString: "#C1C7C8")
-            //cell.backgroundColor = UIColor.init(hexString: "#BCCFD6")
-            //cell.backgroundColor = UIColor.init(hexString: "#55778E")
-        } else {
-            cell.backgroundColor = UIColor.white
-        }
-        
+
         return cell
     }
 

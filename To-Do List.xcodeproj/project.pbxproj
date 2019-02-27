@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0897EB8B235EF13EB42D6444 /* Pods_To_Do_List.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; };
 		3F179030211DAC40000BC603 /* AddCategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F17902F211DAC40000BC603 /* AddCategoryVC.swift */; };
 		3F179032211DACFE000BC603 /* ItemsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F179031211DACFE000BC603 /* ItemsVC.swift */; };
 		3F179034211DAD8A000BC603 /* AddItemVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F179033211DAD8A000BC603 /* AddItemVC.swift */; };
@@ -21,10 +20,27 @@
 		3F750E1A2120FF1F00CCEC62 /* Edit_Item_VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */; };
 		4604121221FB0A9E007EF7B4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4604121121FB0A9E007EF7B4 /* Extensions.swift */; };
 		460412572202DABA007EF7B4 /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460412562202DABA007EF7B4 /* CategoryCell.swift */; };
+		4612EF5F2214D07300E3CAF1 /* Pods_To_Do_List.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; };
+		4612EF6A2214D99000E3CAF1 /* Pods_To_Do_List.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; };
+		4612EF6B2214D99000E3CAF1 /* Pods_To_Do_List.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		468A566A21E3E6150048CD71 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 468A566921E3E6150048CD71 /* ItemCell.swift */; };
 		468A568D21E552040048CD71 /* NetworkingClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 468A568C21E552040048CD71 /* NetworkingClient.swift */; };
 		469BD9E121DEA9F100B8835A /* EditCategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4612EF6C2214D99100E3CAF1 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4612EF6B2214D99000E3CAF1 /* Pods_To_Do_List.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		29DE308FE944CEC82AB77EB6 /* Pods-To-Do List.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-To-Do List.debug.xcconfig"; path = "Pods/Target Support Files/Pods-To-Do List/Pods-To-Do List.debug.xcconfig"; sourceTree = "<group>"; };
@@ -55,7 +71,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0897EB8B235EF13EB42D6444 /* Pods_To_Do_List.framework in Frameworks */,
+				4612EF6A2214D99000E3CAF1 /* Pods_To_Do_List.framework in Frameworks */,
+				4612EF5F2214D07300E3CAF1 /* Pods_To_Do_List.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,6 +198,7 @@
 				3F3EC726211D006100BFA5E3 /* Frameworks */,
 				3F3EC727211D006100BFA5E3 /* Resources */,
 				4358E5F9AF7ECEEF6E27C27F /* [CP] Embed Pods Frameworks */,
+				4612EF6C2214D99100E3CAF1 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -240,7 +258,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		4358E5F9AF7ECEEF6E27C27F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
