@@ -217,9 +217,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="beach-cliffs" translatesAutoresizingMaskIntoConstraints="NO" id="jma-Ev-JPS">
-                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="beach-cliffs" translatesAutoresizingMaskIntoConstraints="NO" id="jma-Ev-JPS">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="54" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="4LU-fB-6Vq">
                                 <rect key="frame" x="8" y="72" width="359" height="587"/>
@@ -287,10 +286,14 @@
                             </tableView>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="jma-Ev-JPS" firstAttribute="leading" secondItem="Vpw-Ii-akL" secondAttribute="leading" id="0wN-YJ-qn2"/>
+                            <constraint firstAttribute="bottom" secondItem="jma-Ev-JPS" secondAttribute="bottom" id="5Gm-w1-Url"/>
                             <constraint firstItem="4LU-fB-6Vq" firstAttribute="bottom" secondItem="H24-uB-LA0" secondAttribute="bottom" constant="-8" id="5wl-sE-Kdg"/>
                             <constraint firstItem="4LU-fB-6Vq" firstAttribute="leading" secondItem="H24-uB-LA0" secondAttribute="leading" constant="8" id="6gc-Oe-3B3"/>
+                            <constraint firstItem="jma-Ev-JPS" firstAttribute="top" secondItem="Vpw-Ii-akL" secondAttribute="top" id="Dl2-Cp-qHv"/>
                             <constraint firstItem="4LU-fB-6Vq" firstAttribute="trailing" secondItem="H24-uB-LA0" secondAttribute="trailing" constant="-8" id="S7D-LI-ydG"/>
                             <constraint firstItem="4LU-fB-6Vq" firstAttribute="top" secondItem="H24-uB-LA0" secondAttribute="top" constant="8" id="SWZ-Bf-6Gc"/>
+                            <constraint firstAttribute="trailing" secondItem="jma-Ev-JPS" secondAttribute="trailing" id="lrT-Gg-e85"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="H24-uB-LA0"/>
                     </view>

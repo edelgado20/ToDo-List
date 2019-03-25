@@ -38,7 +38,8 @@ class ItemCell: UITableViewCell {
     func setUpCell(item: Item){
         //self.accessoryType = .disclosureIndicator
 
-        if item.completed { 
+        if item.completed {
+            checkboxButton.alpha = 0.5
             backgroundCardView.backgroundColor = UIColor(white: 1, alpha: 0.5)
             
             let itemNameString = NSMutableAttributedString(string: item.name)
@@ -46,6 +47,7 @@ class ItemCell: UITableViewCell {
             itemNameString.addAttribute(.foregroundColor, value: UIColor(white: 0, alpha: 0.5), range: NSMakeRange(0, itemNameString.length))
             itemLabel.attributedText = itemNameString
         } else {
+            checkboxButton.alpha = 1.0
             itemLabel.attributedText = NSAttributedString(string: item.name)
             backgroundCardView.backgroundColor = UIColor.white
         }
