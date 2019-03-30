@@ -33,6 +33,11 @@ class AddItemVC: UIViewController, UITextViewDelegate {
         item.descrip = itemDescripField.text
         item.id += 1
         item.category = self.category
+        // Get the index based on the total items count (e.g 0,1,2,3 ...)
+        let predicate = NSPredicate(format: "category = %@", category)
+        let count = realm.objects(Item.self).filter(predicate).count
+        item.index = count
+        
         // Do not add an item without a name
         if (item.name != "") {
             try! self.realm.write {

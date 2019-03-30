@@ -22,21 +22,13 @@ class ItemsVC: UIViewController {
     var category: Category!
     let itemsList = List<Item>()
    
-    var itemsArray: Results<Item>? {
+    var itemsResults: Results<Item>? {
         get {
             let predicate = NSPredicate(format: "category = %@", category)
-            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "completed")
+            //first sort by the index and then by completed
+            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "index").sorted(byKeyPath: "completed")
         }
     }
-    
-    
-//    var itemsList: List<Item>? {
-//        let predicate = NSPredicate(format: "category = %@", category)
-//        return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "completed")
-//    }
-    
-    //let predicate = NSPredicate(format: "category = %@", category)
-    //var itemsList = re
 
     // segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -46,7 +38,7 @@ class ItemsVC: UIViewController {
             let cell = sender as! UITableViewCell
             let indexPath = TABLEVIEW.indexPath(for: cell)
             let editItemVC = segue.destination as! Edit_Item_VC
-            editItemVC.getItem = itemsArray![(indexPath!.row)]
+            editItemVC.getItem = itemsResults![(indexPath!.row)]
         } else if identifier == "addItemSegue" {
             let addItemVC = segue.destination as! AddItemVC
             addItemVC.category = self.category
@@ -76,12 +68,12 @@ class ItemsVC: UIViewController {
 
 extension ItemsVC: UITableViewDataSource {
     func tableView(_ TABLEVIEW: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemsArray?.count ?? 0
+        return itemsResults?.count ?? 0
     }
 
     func tableView(_ TABLEVIEW: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = TABLEVIEW.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ItemCell
-        guard let item = itemsArray?[indexPath.row] else {
+        guard let item = itemsResults?[indexPath.row] else {
             return cell
         }
 
@@ -105,78 +97,37 @@ extension ItemsVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             try! realm?.write {
-                realm?.delete(itemsArray![indexPath.row])
+                realm?.delete(itemsResults![indexPath.row])
             }
         }
         tableView.reloadData() //reloads table view up to date
     }
     
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        print("Inside moveRowAt()")
         
-        /*var arrayOfItems = Array(self.itemsArray!)
-        //var itemNames = nameOfItems(itemsArray: itemsArray)
+        // Convert itemsResults to an array if not nill or else to an empty array
+        var itemsArray = itemsResults.map { Array($0) } ?? []
+        // Do the modifications on the array
+        let movedItem = itemsArray[sourceIndexPath.row]
+        itemsArray.remove(at: sourceIndexPath.row)
+        itemsArray.insert(movedItem, at: destinationIndexPath.row)
         
-        for item in arrayOfItems {
-            print("(1)Item Name: \(item.name)")
+        // Loop through itemsArray and fetch the item object from the realm DB associated with the same item id
+        // and change the item object to the current index
+        for (index, item) in itemsArray.enumerated() {
+            let object = realm?.object(ofType: Item.self, forPrimaryKey: item.id)
+            try! realm?.write {
+                object?.index = index
+            }
         }
-        
-        let movedItemName = arrayOfItems[sourceIndexPath.row]
-        arrayOfItems.remove(at: sourceIndexPath.row)
-        
-        arrayOfItems.insert(movedItemName, at: destinationIndexPath.row)
-        
-        print("\n")
-        for item in arrayOfItems {
-            print("(2)Item Name: \(item.name)")
-        }*/
-        
-        
-        itemsList.append(objectsIn: itemsArray!)
-        
-        for item in itemsList {
-            print("(1)Items name: \(item.name)")
-        }
-        print("\n")
-        
-//        let movedItem = self.itemsList[sourceIndexPath.row]
-//        itemsList.remove(at: sourceIndexPath.row)
-//        itemsList.insert(movedItem, at: destinationIndexPath.row)
-
-        itemsList.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
-        
-        //itemsList.swapAt(sourceIndexPath.row, destinationIndexPath.row)
-        
-        
-        for item in itemsList {
-            print("(2)Items name: \(item.name)")
-        }
-        print("\n")
-        
-        for item in itemsArray! {
-            print("(3)Items name: \(item.name)")
-        }
-        
     }
-    
-    func nameOfItems(itemsArray: [Item]) -> [String] {
-        var items = [String]()
-        for item in itemsArray {
-            items.append(item.name)
-        }
-
-        return items
-    }
-    
-    
-
 }
 
 extension ItemsVC: UITableViewDragDelegate {
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         print("Inside itemsForBeginning()")
-        let string = itemsArray?[indexPath.row]
+        let string = itemsResults?[indexPath.row]
         guard let data = string?.name.data(using: .utf8) else { return [] }
         let itemProvider = NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String)
 
@@ -186,80 +137,25 @@ extension ItemsVC: UITableViewDragDelegate {
 
 extension ItemsVC: UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        print("PerformDropWith!!!")
     }
 
     func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
-        print("-->Inside canHandle()")
         return session.canLoadObjects(ofClass: NSString.self)
     }
 
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath
         destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
-        print("Inside dropSessionDidUpdate()")
         // The .move operation is available only for dragging within a single app.
         if tableView.hasActiveDrag {
             if session.items.count > 1 {
-                print("1")
                 return UITableViewDropProposal(operation: .cancel)
             } else {
-                print("2")
                 return UITableViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
             }
         } else {
-            print("3")
             return UITableViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
         }
     }
-
-//    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-//        print("Inside performDropWith()")
-//        let itemsArray = Array(self.itemsArray!)
-//        var itemNames = nameOfItems(itemsArray: itemsArray)
-//
-//        let destinationIndexPath: IndexPath
-//
-//        if let indexPath = coordinator.destinationIndexPath {
-//            destinationIndexPath = indexPath
-//        } else {
-//            let section = tableView.numberOfSections - 1
-//            let row = tableView.numberOfRows(inSection: section)
-//            destinationIndexPath = IndexPath(row: row, section: section)
-//        }
-//
-//        coordinator.session.loadObjects(ofClass: NSString.self) { items in
-//            guard let strings = items as? [String] else { return }
-//            print("Inside performDropWith() -> 1")
-//            for string in strings {
-//                print("String: \(string)")
-//            }
-//            print("Inside performDropWith() -> 2")
-//            var indexPaths = [IndexPath]()
-//
-//            for (index, string) in strings.enumerated() {
-//                let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
-//
-//                // insert the copy to the array
-//                itemNames.insert(string, at: indexPath.row)
-//
-//                // keep track of this new row
-//                indexPaths.append(indexPath)
-//            }
-//            print("Inside performDropWith() -> 3")
-//            // insert them all into the table view at once
-//            tableView.insertRows(at: indexPaths, with: .automatic)
-//            print("Inside performDropWith() -> 4")
-//        }
-//    }
-
-//    func nameOfItems(itemsArray: [Item]) -> [String] {
-//        var items = [String]()
-//        for item in itemsArray {
-//            items.append(item.name)
-//        }
-//
-//        return items
-//    }
 }
 
 extension ItemsVC: ItemCellDelegate {
@@ -268,7 +164,7 @@ extension ItemsVC: ItemCellDelegate {
         
         let index = TABLEVIEW.indexPath(for: cell)
         try! realm?.write {
-            itemsArray?[(index?.row)!].completed = !(itemsArray?[(index?.row)!].completed ?? false)
+            itemsResults?[(index?.row)!].completed = !(itemsResults?[(index?.row)!].completed ?? false)
         }
         TABLEVIEW.reloadData()
     }
