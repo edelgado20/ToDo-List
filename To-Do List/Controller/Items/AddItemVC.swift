@@ -21,6 +21,18 @@ class AddItemVC: UIViewController, UITextViewDelegate {
         
         realm = try! Realm()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        itemNameField.layer.cornerRadius = 8
+        itemNameField.layer.borderWidth = 1
+        itemNameField.layer.borderColor = UIColor.black.cgColor
+        
+        itemDescripField.layer.cornerRadius = 8
+        itemDescripField.layer.borderWidth = 1
+        itemDescripField.layer.borderColor = UIColor.black.cgColor
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()

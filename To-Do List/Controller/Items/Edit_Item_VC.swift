@@ -15,6 +15,7 @@ class Edit_Item_VC: UIViewController {
     @IBOutlet weak var editName: UITextField!
     @IBOutlet weak var editDescription: UITextView!
     @IBOutlet weak var saveItemButton: UIBarButtonItem!
+    @IBOutlet weak var importImageButton: UIButton!
     
     var getItem = Item()
 
@@ -29,7 +30,19 @@ class Edit_Item_VC: UIViewController {
         super.viewWillAppear(animated)
         
         editName.text = getItem.name
+        editName.layer.cornerRadius = 8
+        editName.layer.borderWidth = 1
+        editName.layer.borderColor = UIColor.black.cgColor
+        
         editDescription.text = getItem.descrip
+        editDescription.layer.cornerRadius = 8
+        editDescription.layer.borderWidth = 1
+        editDescription.layer.borderColor = UIColor.black.cgColor
+        
+        importImageButton.layer.cornerRadius = 8
+        importImageButton.layer.borderWidth = 1
+        importImageButton.layer.borderColor = UIColor.black.cgColor
+        importImageButton.backgroundColor = UIColor.init(hexString: "#00A6CC")
     }
     
     override func viewWillDisappear(_ animated: Bool) {

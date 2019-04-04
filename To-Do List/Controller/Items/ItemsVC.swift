@@ -6,10 +6,6 @@
 //  Copyright © 2018 Edgar Delgado. All rights reserved.
 //
 
-/*
- 1. Tell the table view that you want to be able to move rows around
- 2. Update the data model && Update the tableview UI
- */
 import UIKit
 import RealmSwift
 import MobileCoreServices
