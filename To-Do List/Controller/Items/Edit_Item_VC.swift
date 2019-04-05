@@ -42,7 +42,6 @@ class Edit_Item_VC: UIViewController {
         importImageButton.layer.cornerRadius = 8
         importImageButton.layer.borderWidth = 1
         importImageButton.layer.borderColor = UIColor.black.cgColor
-        importImageButton.backgroundColor = UIColor.init(hexString: "#00A6CC")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -62,4 +61,7 @@ class Edit_Item_VC: UIViewController {
         saveItemButton.isEnabled = editName.text != ""
     }
     
+    @IBAction func importButtonPressed(_ sender: Any) {
+        print("import button pressed")
+    }
 }
