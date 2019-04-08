@@ -16,14 +16,16 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
     @IBOutlet weak var itemNameField: UITextField!
     @IBOutlet weak var itemDescripField: UITextView!
     @IBOutlet weak var importImageButton: UIButton!
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var collectionView: UICollectionView!
     
     let imagePickerController = UIImagePickerController()
+    var imageNames = [String]()
+    // This bool is used to detect when the back button is tapped in the navigation controller
+    var goingForwards: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         itemDescripField.delegate = self
-        
         realm = try! Realm()
     }
     
@@ -41,6 +43,18 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         importImageButton.layer.cornerRadius = 8
         importImageButton.layer.borderWidth = 1
         importImageButton.layer.borderColor = UIColor.black.cgColor
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        /* This checks when the user is going back or tapped on the done button without inserting a name.
+           It deletes all images the were written on the disk for this uncreated item, if any. */
+        if itemNameField.text?.isEmpty ?? true && !goingForwards{
+            imageNames.forEach {
+                try? FileService.delete(filename: $0)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -65,6 +79,9 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         }))
         
         actionPopUp.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action: UIAlertAction) in
+            // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
+            self.goingForwards = true
+
             self.imagePickerController.sourceType = .photoLibrary
             self.present(self.imagePickerController, animated: true, completion: nil)
         }))
@@ -82,12 +99,15 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
     }
     
     func presentCamera() {
+        // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
+        goingForwards = true
+
         self.imagePickerController.sourceType = .camera
         self.present(self.imagePickerController, animated: true, completion: nil)
     }
     
     func cameraAccessNeeded() {
-        guard let settingsAppURL = URL(string: UIApplicationOpenSettingsURLString) else { return }
+        guard let settingsAppURL = URL(string: UIApplication.openSettingsURLString) else { return }
         
         let alert = UIAlertController(title: "Need Camera Access",
                                       message: "Camera access is required to take a photo",
@@ -101,11 +121,17 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         present(alert, animated: true, completion: nil)
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        guard let image = info[UIImagePickerControllerOriginalImage] as! UIImage? else { return }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as! UIImage? else { return }
         
-        imageView.image = image
-        
+        // To-Do: 1) Resize the image 2) Write the image to Disk 3) Store URL to Realm(DB)
+        let resizeImage = image.resizeAndCrop(to: 1000)
+        guard let url = try? FileService.write(image: resizeImage) else { return }
+        // temporarely append the urlString 
+        imageNames.append(url)
+        collectionView.reloadData()
+        // set the bool back to false because were returning to the view controller and dismmissing from the imagePicker(Photo Library)
+        goingForwards = false
         self.imagePickerController.dismiss(animated: true, completion: nil)
     }
     
@@ -123,9 +149,14 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         let predicate = NSPredicate(format: "category = %@", category)
         let count = realm.objects(Item.self).filter(predicate).count
         item.index = count
+
+        // To-Do: Add URL to Realm
+        for imageName in imageNames {
+            item.imageNames.append(imageName)
+        }
         
         // Do not add an item without a name
-        if (item.name != "") {
+        if !item.name.isEmpty {
             try! self.realm.write {
                 self.realm.add(item)
             }
@@ -138,4 +169,47 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         itemDescripField.text = ""
     }
 
+}
+
+extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imageNames.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! ImageCell
+        let image = try? FileService.readImage(from: imageNames[indexPath.row])
+        cell.imgView.image = image
+        
+        return cell
+    }
+    
+    
+}
+
+class ImageCell: UICollectionViewCell {
+    @IBOutlet weak var imgView: UIImageView!
+}
+
+extension UIImage {
+    //resizes images to its current size
+    func resize(to size: CGSize) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { context in
+            self.draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+    
+    func resizeAndCrop(to square: CGFloat)-> UIImage {
+        let targetSize = CGSize(width: square, height: square)
+        return UIGraphicsImageRenderer(size: targetSize).image { context in
+            if self.size.width > self.size.height {
+                let offset = (self.size.width - self.size.height) / 2
+                self.draw(in: CGRect(origin: CGPoint(x: -offset, y: 0), size: size))
+            } else {
+                let offset = (self.size.height - self.size.width) / 2
+                self.draw(in: CGRect(origin: CGPoint(x: 0, y: -offset), size: size))
+            }
+        }
+    }
 }

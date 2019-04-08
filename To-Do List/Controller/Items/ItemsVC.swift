@@ -90,7 +90,7 @@ extension ItemsVC: UITableViewDelegate {
      }*/
 
     // deletes an item
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             try! realm?.write {
                 realm?.delete(itemsResults![indexPath.row])
@@ -171,8 +171,8 @@ extension ItemsVC: ItemCellDelegate {
 extension UIButton {
     override open func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let relativeFrame = self.bounds
-        let hitTestEdgeInsets = UIEdgeInsetsMake(-20, -20, -20, -20)
-        let hitFrame = UIEdgeInsetsInsetRect(relativeFrame, hitTestEdgeInsets)
+        let hitTestEdgeInsets = UIEdgeInsets(top: -20, left: -20, bottom: -20, right: -20)
+        let hitFrame = relativeFrame.inset(by: hitTestEdgeInsets)
         return hitFrame.contains(point)
     }
 }

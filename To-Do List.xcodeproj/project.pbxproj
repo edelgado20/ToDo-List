@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F11230722592DBB001C339F /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F11230622592DB9001C339F /* FileService.swift */; };
 		3F179030211DAC40000BC603 /* AddCategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F17902F211DAC40000BC603 /* AddCategoryVC.swift */; };
 		3F179032211DACFE000BC603 /* ItemsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F179031211DACFE000BC603 /* ItemsVC.swift */; };
 		3F179034211DAD8A000BC603 /* AddItemVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F179033211DAD8A000BC603 /* AddItemVC.swift */; };
@@ -45,6 +46,7 @@
 /* Begin PBXFileReference section */
 		29DE308FE944CEC82AB77EB6 /* Pods-To-Do List.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-To-Do List.debug.xcconfig"; path = "Pods/Target Support Files/Pods-To-Do List/Pods-To-Do List.debug.xcconfig"; sourceTree = "<group>"; };
 		342442DFB939D39FD68F33CB /* Pods-To-Do List.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-To-Do List.release.xcconfig"; path = "Pods/Target Support Files/Pods-To-Do List/Pods-To-Do List.release.xcconfig"; sourceTree = "<group>"; };
+		3F11230622592DB9001C339F /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
 		3F17902F211DAC40000BC603 /* AddCategoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryVC.swift; sourceTree = "<group>"; };
 		3F179031211DACFE000BC603 /* ItemsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsVC.swift; sourceTree = "<group>"; };
 		3F179033211DAD8A000BC603 /* AddItemVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemVC.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				468A568C21E552040048CD71 /* NetworkingClient.swift */,
+				3F11230622592DB9001C339F /* FileService.swift */,
 			);
 			path = Client;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				460412572202DABA007EF7B4 /* CategoryCell.swift in Sources */,
+				3F11230722592DBB001C339F /* FileService.swift in Sources */,
 				3F179034211DAD8A000BC603 /* AddItemVC.swift in Sources */,
 				3F750E1A2120FF1F00CCEC62 /* Edit_Item_VC.swift in Sources */,
 				469BD9E121DEA9F100B8835A /* EditCategoryVC.swift in Sources */,
@@ -469,7 +473,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.edelgado;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -488,7 +492,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.edelgado;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -113,7 +113,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewDidLoad()
         
         realm = try! Realm()
-        print(Realm.Configuration.defaultConfiguration.fileURL)
+        print(Realm.Configuration.defaultConfiguration.fileURL!)
     }
 
     override func viewWillAppear(_ animated: Bool) {

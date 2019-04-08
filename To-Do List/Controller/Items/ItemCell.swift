@@ -43,7 +43,7 @@ class ItemCell: UITableViewCell {
             backgroundCardView.backgroundColor = UIColor(white: 1, alpha: 0.5)
             
             let itemNameString = NSMutableAttributedString(string: item.name)
-            itemNameString.addAttribute(NSAttributedStringKey.strikethroughStyle, value: NSUnderlineStyle.styleSingle.rawValue, range: NSMakeRange(0, itemNameString.length))
+            itemNameString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSMakeRange(0, itemNameString.length))
             itemNameString.addAttribute(.foregroundColor, value: UIColor(white: 0, alpha: 0.5), range: NSMakeRange(0, itemNameString.length))
             itemLabel.attributedText = itemNameString
         } else {
