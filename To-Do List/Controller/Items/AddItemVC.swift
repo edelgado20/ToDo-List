@@ -19,12 +19,13 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
     @IBOutlet weak var collectionView: UICollectionView!
     
     let imagePickerController = UIImagePickerController()
-    var imageNames = [String]()
+    var imageNames = [String]() // URLstrings
     // This bool is used to detect when the back button is tapped in the navigation controller
     var goingForwards: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         itemDescripField.delegate = self
         realm = try! Realm()
     }
@@ -124,14 +125,14 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as! UIImage? else { return }
         
-        // To-Do: 1) Resize the image 2) Write the image to Disk 3) Store URL to Realm(DB)
-        let resizeImage = image.resizeAndCrop(to: 1000)
+        // 1) Resize the image 2) Write the image to Disk
+        let resizeImage = image.image(scaledToFitIn: CGSize(width: 1000, height: 1000))
         guard let url = try? FileService.write(image: resizeImage) else { return }
-        // temporarely append the urlString 
-        imageNames.append(url)
+        
+        imageNames.append(url)// temporarely append the urlString
         collectionView.reloadData()
-        // set the bool back to false because were returning to the view controller and dismmissing from the imagePicker(Photo Library)
-        goingForwards = false
+        
+        goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
         self.imagePickerController.dismiss(animated: true, completion: nil)
     }
     
@@ -150,7 +151,7 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         let count = realm.objects(Item.self).filter(predicate).count
         item.index = count
 
-        // To-Do: Add URL to Realm
+        // Store the URL strings of the images to Realm
         for imageName in imageNames {
             item.imageNames.append(imageName)
         }
@@ -171,7 +172,7 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
 
 }
 
-extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate {
+extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return imageNames.count
@@ -184,7 +185,16 @@ extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate {
         
         return cell
     }
-    
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        // Get the image ratio to calculate the cell height dynamically
+        if let image = try? FileService.readImage(from: imageNames[indexPath.row]) {
+            let imageRatio = image.getImageRatio()
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / imageRatio)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / 1.5)
+        }
+    }
     
 }
 
@@ -193,23 +203,46 @@ class ImageCell: UICollectionViewCell {
 }
 
 extension UIImage {
-    //resizes images to its current size
-    func resize(to size: CGSize) -> UIImage {
-        return UIGraphicsImageRenderer(size: size).image { context in
-            self.draw(in: CGRect(origin: .zero, size: size))
-        }
+    func getImageRatio() -> CGFloat {
+        let imageRatio = CGFloat(self.size.width / self.size.height)
+        return imageRatio
     }
     
-    func resizeAndCrop(to square: CGFloat)-> UIImage {
-        let targetSize = CGSize(width: square, height: square)
-        return UIGraphicsImageRenderer(size: targetSize).image { context in
-            if self.size.width > self.size.height {
-                let offset = (self.size.width - self.size.height) / 2
-                self.draw(in: CGRect(origin: CGPoint(x: -offset, y: 0), size: size))
-            } else {
-                let offset = (self.size.height - self.size.width) / 2
-                self.draw(in: CGRect(origin: CGPoint(x: 0, y: -offset), size: size))
-            }
+    func image(scaledToFitIn targetSize: CGSize) -> UIImage {
+        
+        let normalizedSelf = self.normalizedImage()
+        
+        let imageWidth = normalizedSelf.size.width * normalizedSelf.scale
+        let imageHeight = normalizedSelf.size.height * normalizedSelf.scale
+        
+        if imageWidth <= targetSize.width && imageHeight <= targetSize.height {
+            return normalizedSelf
         }
+        
+        let widthRatio = imageWidth / targetSize.width
+        let heightRatio = imageHeight / targetSize.height
+        let scaleFactor = max(widthRatio, heightRatio)
+        let scaledSize = CGSize(width: imageWidth / scaleFactor, height: imageHeight / scaleFactor)
+        
+        return normalizedSelf.image(scaledToSizeInPixels: scaledSize)
+    }
+    
+    func normalizedImage() -> UIImage {
+        if (self.imageOrientation == .up) {
+            return self
+        }
+        UIGraphicsBeginImageContextWithOptions(self.size, true, self.scale)
+        draw(in: CGRect(origin: .zero, size: self.size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    func image(scaledToSizeInPixels targetSize: CGSize) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(targetSize, true, 1)
+        draw(in: CGRect(origin: .zero, size: targetSize))
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
     }
 }

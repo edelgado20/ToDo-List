@@ -122,7 +122,6 @@ extension ItemsVC: UITableViewDelegate {
 extension ItemsVC: UITableViewDragDelegate {
 
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        print("Inside itemsForBeginning()")
         let string = itemsResults?[indexPath.row]
         guard let data = string?.name.data(using: .utf8) else { return [] }
         let itemProvider = NSItemProvider(item: data as NSData, typeIdentifier: kUTTypePlainText as String)

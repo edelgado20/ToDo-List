@@ -12,10 +12,13 @@ import UIKit
 enum FileService {
     static func write(image: UIImage, to filename: String = UUID().uuidString) throws -> String {
         let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
+        // Appends the filename(random UUID String) to the document directory and returns a fileURL for the given path
         let fileURL = documentDirectory.appendingPathComponent(filename)
         guard let data = image.pngData() else { throw FileServiceError.noData }
         print("Write to Disk")
+        // Writes the data(image) to the fileURL(location)
         try data.write(to: fileURL)
+        // Returns the generated filename from the UUID string (default parameter)
         return filename
     }
     
