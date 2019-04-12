@@ -16,14 +16,19 @@ class Edit_Item_VC: UIViewController {
     @IBOutlet weak var editDescription: UITextView!
     @IBOutlet weak var saveItemButton: UIBarButtonItem!
     @IBOutlet weak var importImageButton: UIButton!
+    @IBOutlet weak var CollectionView: UICollectionView!
     
     var getItem = Item()
+    var imageStringNames = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Edit \(getItem.name)"
         realm = try! Realm()
+        for imageName in getItem.imageNames {
+            imageStringNames.append(imageName)
+        }
+        self.title = "Edit \(getItem.name)"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -44,10 +49,6 @@ class Edit_Item_VC: UIViewController {
         importImageButton.layer.borderColor = UIColor.black.cgColor
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     @IBAction func saveEditItem(_ sender: Any) {
         try! self.realm?.write {
             getItem.name = editName.text ?? ""
@@ -65,3 +66,32 @@ class Edit_Item_VC: UIViewController {
         print("import button pressed")
     }
 }
+
+class CollectionImageCell: UICollectionViewCell {
+    @IBOutlet weak var imageView: UIImageView!
+}
+
+extension Edit_Item_VC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imageStringNames.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = CollectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! CollectionImageCell
+        let image = try? FileService.readImage(from: imageStringNames[indexPath.row])
+        cell.imageView.image = image
+        
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if let image = try? FileService.readImage(from: imageStringNames[indexPath.row]) {
+            let imageRatio = image.getImageRatio()
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / imageRatio)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / 1.5)
+        }
+    }
+}
+
+
