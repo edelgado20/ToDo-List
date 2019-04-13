@@ -15,7 +15,7 @@ enum FileService {
         // Appends the filename(random UUID String) to the document directory and returns a fileURL for the given path
         let fileURL = documentDirectory.appendingPathComponent(filename)
         guard let data = image.pngData() else { throw FileServiceError.noData }
-        print("Write to Disk")
+        print("Wrote to Disk")
         // Writes the data(image) to the fileURL(location)
         try data.write(to: fileURL)
         // Returns the generated filename from the UUID string (default parameter)
@@ -34,7 +34,7 @@ enum FileService {
         let documentDirectory = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
         let fileURL = documentDirectory.appendingPathComponent(filename)
         try FileManager.default.removeItem(at: fileURL)
-        print("Deleted Image from Disk/Documents")
+        print("Deleted Image from Disk")
     }
 }
 

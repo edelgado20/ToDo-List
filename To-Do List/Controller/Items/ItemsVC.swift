@@ -92,6 +92,12 @@ extension ItemsVC: UITableViewDelegate {
     // deletes an item
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
+            // Delete images from the FileService if any
+            let item = itemsResults![indexPath.row]
+            for imageName in item.imageNames {
+                try? FileService.delete(filename: imageName)
+            }
+            // Delete item realm object
             try! realm?.write {
                 realm?.delete(itemsResults![indexPath.row])
             }

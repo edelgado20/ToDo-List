@@ -76,6 +76,8 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
                 case .notDetermined: self.requestCameraPermission()
                 case .authorized: self.presentCamera()
                 case .restricted, .denied: self.cameraAccessNeeded()
+            @unknown default:
+                print("Unknown camera status")
             }
         }))
         

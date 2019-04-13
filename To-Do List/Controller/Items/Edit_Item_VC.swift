@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import AVFoundation
 
-class Edit_Item_VC: UIViewController {
+class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var realm: Realm? = nil
     
     @IBOutlet weak var editName: UITextField!
@@ -20,11 +21,15 @@ class Edit_Item_VC: UIViewController {
     
     var getItem = Item()
     var imageStringNames = [String]()
+    var newImportedImages = [String]()
+    let imagePickerController = UIImagePickerController()
+    var goingForwards: Bool = false // Detect when the back button is tapped in the nav controller to delete images from the file service
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         realm = try! Realm()
+        //Get all images from the Item realm object
         for imageName in getItem.imageNames {
             imageStringNames.append(imageName)
         }
@@ -49,10 +54,22 @@ class Edit_Item_VC: UIViewController {
         importImageButton.layer.borderColor = UIColor.black.cgColor
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // This boolean checks when the user is going back. It deletes all images the were written on the FileService/Disk
+        if !goingForwards {
+            newImportedImages.forEach {
+                try? FileService.delete(filename: $0)
+            }
+        }
+    }
+    
     @IBAction func saveEditItem(_ sender: Any) {
+        goingForwards = true // bool prevents from deleting the images on the file service on the viewDisapper()
         try! self.realm?.write {
             getItem.name = editName.text ?? ""
             getItem.descrip = editDescription.text
+            getItem.imageNames.append(objectsIn: newImportedImages)
         }
         
         navigationController?.popViewController(animated: true)
@@ -63,7 +80,82 @@ class Edit_Item_VC: UIViewController {
     }
     
     @IBAction func importButtonPressed(_ sender: Any) {
-        print("import button pressed")
+        imagePickerController.delegate = self
+        
+        let actionPopUp = UIAlertController(title: "Photo Source", message: "Choose a source", preferredStyle: .actionSheet)
+        
+        actionPopUp.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action: UIAlertAction) in
+            // Resource: https://www.andrewcbancroft.com/2018/02/24/swift-cheat-sheet-for-iphone-camera-access-usage/
+            let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+            
+            switch cameraStatus {
+            case .notDetermined: self.requestCameraPermission()
+            case .authorized: self.presentCamera()
+            case .restricted, .denied: self.cameraAccessNeeded()
+            @unknown default:
+                print("unknown camera status")
+            }
+        }))
+        
+        actionPopUp.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action: UIAlertAction) in
+            // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
+            self.goingForwards = true
+            
+            self.imagePickerController.sourceType = .photoLibrary
+            self.present(self.imagePickerController, animated: true, completion: nil)
+        }))
+        
+        actionPopUp.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(actionPopUp, animated: true, completion: nil)
+    }
+    
+    func requestCameraPermission() {
+        AVCaptureDevice.requestAccess(for: .video, completionHandler: { accessGranted in
+            guard accessGranted == true else { return }
+            self.presentCamera()
+        })
+    }
+    
+    func presentCamera() {
+        // Set to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
+        goingForwards = true
+        
+        self.imagePickerController.sourceType = .camera
+        self.present(self.imagePickerController, animated: true, completion: nil)
+    }
+    
+    func cameraAccessNeeded() {
+        guard let settingsAppURL = URL(string: UIApplication.openSettingsURLString) else { return }
+        
+        let alert = UIAlertController(title: "Need Camera Access",
+                                      message: "Camera access is required to take a photo",
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Allow Camera", style: .cancel, handler: { (alert: UIAlertAction) in
+            UIApplication.shared.open(settingsAppURL, options: [:], completionHandler: nil)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as! UIImage? else { return }
+        // 1) Resize the image 2) Write the image to Disk(FileService)
+        let resizeImage = image.image(scaledToFitIn: CGSize(width: 1000, height: 1000))
+        guard let urlString = try? FileService.write(image: resizeImage) else { return }
+        
+        imageStringNames.append(urlString) // array that displays data on the collection view
+        newImportedImages.append(urlString) // used to manage new images to posibly add them to realm or delete them from disk
+        CollectionView.reloadData()
+        
+        goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
+        self.imagePickerController.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.imagePickerController.dismiss(animated: true, completion: nil)
     }
 }
 

@@ -11,6 +11,16 @@ import RealmSwift
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
     @IBOutlet weak var tableView: UITableView!
+    var itemsToDeleteInFileService: Results<Item>? {
+        // Delete all posible images of all items being deleted from the file service
+        didSet {
+            for item in self.itemsToDeleteInFileService! {
+                for image in item.imageNames {
+                    try? FileService.delete(filename: image)
+                }
+            }
+        }
+    }
 
     var realm: Realm? = nil
     var token: NotificationToken?
@@ -49,6 +59,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             try? realm.write {
                 let category = categoriesArray[indexPath.row]
                 let itemsToDelete = realm.objects(Item.self).filter("category.id == \"\(category.id)\"")
+                self.itemsToDeleteInFileService = itemsToDelete
                 realm.delete(itemsToDelete)
                 realm.delete(category)
             }
