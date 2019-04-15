@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 import AVFoundation
 
-class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var realm: Realm!
     var category: Category = Category()
     @IBOutlet weak var itemNameField: UITextField!
@@ -26,7 +26,9 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        itemDescripField.delegate = self
+        itemNameField.delegate = self
+        // Hides the keyboard when user taps anywhere else other than the keyboard
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         realm = try! Realm()
     }
     
@@ -57,9 +59,10 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
             }
         }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+    // hides keyboard when pressed on return key
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     @IBAction func importButtonPressed(_ sender: Any) {
@@ -166,9 +169,9 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         _ = navigationController?.popViewController(animated: true)
     }
     
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        itemDescripField.text = ""
-    }
+//    func textViewDidBeginEditing(_ textView: UITextView) {
+//        itemDescripField.text = ""
+//    }
 
 }
 

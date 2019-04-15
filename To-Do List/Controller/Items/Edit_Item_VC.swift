@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 import AVFoundation
 
-class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var realm: Realm? = nil
     
     @IBOutlet weak var editName: UITextField!
@@ -32,6 +32,9 @@ class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigat
         //Get all images from the Item realm object
         imageStringNames.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
+        editName.delegate = self
+        // Hides the keyboard when user taps anywhere else other than the keyboard
+        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,6 +63,11 @@ class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigat
                 try? FileService.delete(filename: $0)
             }
         }
+    }
+    // hides keyboard when pressed on return key
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     
     @IBAction func saveEditItem(_ sender: Any) {
