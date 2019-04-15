@@ -436,7 +436,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="CollectionView" destination="tpq-Ze-EzF" id="V2P-WQ-RaR"/>
+                        <outlet property="collectionView" destination="tpq-Ze-EzF" id="V2P-WQ-RaR"/>
                         <outlet property="editDescription" destination="nhb-HC-Rcb" id="JAg-VP-Q5J"/>
                         <outlet property="editName" destination="mNl-po-U57" id="PRp-vE-daV"/>
                         <outlet property="importImageButton" destination="VYR-rT-x2R" id="t5h-Ys-EtF"/>

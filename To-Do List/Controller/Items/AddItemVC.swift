@@ -19,13 +19,13 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
     @IBOutlet weak var collectionView: UICollectionView!
     
     let imagePickerController = UIImagePickerController()
-    var imageNames = [String]() // URLstrings
+    // URL Strings
+    var imageNames: [String] = []
     // This bool is used to detect when the back button is tapped in the navigation controller
     var goingForwards: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         itemDescripField.delegate = self
         realm = try! Realm()
     }
@@ -154,9 +154,7 @@ class AddItemVC: UIViewController, UITextViewDelegate, UIImagePickerControllerDe
         item.index = count
 
         // Store the URL strings of the images to Realm
-        for imageName in imageNames {
-            item.imageNames.append(imageName)
-        }
+        item.imageNames.append(objectsIn: imageNames)
         
         // Do not add an item without a name
         if !item.name.isEmpty {
@@ -182,7 +180,7 @@ extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate, UICol
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! ImageCell
-        let image = try? FileService.readImage(from: imageNames[indexPath.row])
+        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row])
         cell.imgView.image = image
         
         return cell
@@ -190,7 +188,7 @@ extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate, UICol
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         // Get the image ratio to calculate the cell height dynamically
-        if let image = try? FileService.readImage(from: imageNames[indexPath.row]) {
+        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row]) {
             let imageRatio = image.getImageRatio()
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / imageRatio)
         } else {

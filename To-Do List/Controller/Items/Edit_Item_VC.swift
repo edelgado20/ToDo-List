@@ -17,10 +17,10 @@ class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigat
     @IBOutlet weak var editDescription: UITextView!
     @IBOutlet weak var saveItemButton: UIBarButtonItem!
     @IBOutlet weak var importImageButton: UIButton!
-    @IBOutlet weak var CollectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView!
     
     var getItem = Item()
-    var imageStringNames = [String]()
+    var imageStringNames: [String] = []
     var newImportedImages = [String]()
     let imagePickerController = UIImagePickerController()
     var goingForwards: Bool = false // Detect when the back button is tapped in the nav controller to delete images from the file service
@@ -30,9 +30,7 @@ class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigat
         
         realm = try! Realm()
         //Get all images from the Item realm object
-        for imageName in getItem.imageNames {
-            imageStringNames.append(imageName)
-        }
+        imageStringNames.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
     }
     
@@ -148,7 +146,7 @@ class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigat
         
         imageStringNames.append(urlString) // array that displays data on the collection view
         newImportedImages.append(urlString) // used to manage new images to posibly add them to realm or delete them from disk
-        CollectionView.reloadData()
+        collectionView.reloadData()
         
         goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
         self.imagePickerController.dismiss(animated: true, completion: nil)
@@ -169,15 +167,15 @@ extension Edit_Item_VC: UICollectionViewDataSource, UICollectionViewDelegate, UI
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = CollectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! CollectionImageCell
-        let image = try? FileService.readImage(from: imageStringNames[indexPath.row])
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! CollectionImageCell
+        let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row])
         cell.imageView.image = image
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if let image = try? FileService.readImage(from: imageStringNames[indexPath.row]) {
+        if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row]) {
             let imageRatio = image.getImageRatio()
             return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / imageRatio)
         } else {
