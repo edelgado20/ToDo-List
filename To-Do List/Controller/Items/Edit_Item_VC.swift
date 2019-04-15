@@ -158,7 +158,11 @@ class Edit_Item_VC: UIViewController, UIImagePickerControllerDelegate, UINavigat
 }
 
 class CollectionImageCell: UICollectionViewCell {
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView! {
+        didSet {
+            imageView.layer.cornerRadius = 10.0
+        }
+    }
 }
 
 extension Edit_Item_VC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {

@@ -199,7 +199,11 @@ extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate, UICol
 }
 
 class ImageCell: UICollectionViewCell {
-    @IBOutlet weak var imgView: UIImageView!
+    @IBOutlet weak var imgView: UIImageView! {
+        didSet {
+            imgView.layer.cornerRadius = 10.0
+        }
+    }
 }
 
 extension UIImage {
