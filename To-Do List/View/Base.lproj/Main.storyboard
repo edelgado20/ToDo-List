@@ -351,11 +351,11 @@
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VYR-rT-x2R">
                                 <rect key="frame" x="16" y="247" width="209" height="40"/>
-                                <color key="backgroundColor" red="0.0" green="0.65098039215686276" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="6ut-sa-AgL"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="10" maxX="0.0" maxY="10"/>
                                 <state key="normal" title="Import Image" image="paperClip">
                                     <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -489,11 +489,11 @@
                             </textView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pnq-Fk-on8">
                                 <rect key="frame" x="16" y="242" width="209" height="40"/>
-                                <color key="backgroundColor" red="0.0" green="0.65098039215686276" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" name="systemBlueColor" catalog="System" colorSpace="catalog"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="LXI-OC-Di2"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="italicSystem" pointSize="20"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="10" maxX="0.0" maxY="10"/>
                                 <state key="normal" title="Import Image" image="paperClip">
                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
