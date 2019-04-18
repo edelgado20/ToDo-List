@@ -85,7 +85,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="yJF-4w-8EA"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Bucket List" id="RdV-yt-4og">
+                    <navigationItem key="navigationItem" title="Tackle List" id="RdV-yt-4og">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="5Eb-vZ-NyQ">
                             <connections>
                                 <segue destination="GnS-X7-Izt" kind="show" identifier="addCategoryTransition" id="E5b-wU-23f"/>
