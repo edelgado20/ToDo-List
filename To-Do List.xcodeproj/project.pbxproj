@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -21,9 +21,6 @@
 		3F750E1A2120FF1F00CCEC62 /* Edit_Item_VC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */; };
 		4604121221FB0A9E007EF7B4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4604121121FB0A9E007EF7B4 /* Extensions.swift */; };
 		460412572202DABA007EF7B4 /* CategoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460412562202DABA007EF7B4 /* CategoryCell.swift */; };
-		4612EF5F2214D07300E3CAF1 /* Pods_To_Do_List.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; };
-		4612EF6A2214D99000E3CAF1 /* Pods_To_Do_List.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; };
-		4612EF6B2214D99000E3CAF1 /* Pods_To_Do_List.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF2B3C7CCFB3F7A877B13351 /* Pods_To_Do_List.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		468A566A21E3E6150048CD71 /* ItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 468A566921E3E6150048CD71 /* ItemCell.swift */; };
 		468A568D21E552040048CD71 /* NetworkingClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 468A568C21E552040048CD71 /* NetworkingClient.swift */; };
 		469BD9E121DEA9F100B8835A /* EditCategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469BD9E021DEA9F100B8835A /* EditCategoryVC.swift */; };
@@ -36,7 +33,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4612EF6B2214D99000E3CAF1 /* Pods_To_Do_List.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,8 +69,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4612EF6A2214D99000E3CAF1 /* Pods_To_Do_List.framework in Frameworks */,
-				4612EF5F2214D07300E3CAF1 /* Pods_To_Do_List.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

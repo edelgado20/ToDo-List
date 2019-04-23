@@ -168,11 +168,6 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         
         _ = navigationController?.popViewController(animated: true)
     }
-    
-//    func textViewDidBeginEditing(_ textView: UITextView) {
-//        itemDescripField.text = ""
-//    }
-
 }
 
 extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
