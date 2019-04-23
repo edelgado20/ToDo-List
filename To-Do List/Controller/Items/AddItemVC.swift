@@ -19,10 +19,8 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     @IBOutlet weak var collectionView: UICollectionView!
     
     let imagePickerController = UIImagePickerController()
-    // URL Strings
-    var imageNames: [String] = []
-    // This bool is used to detect when the back button is tapped in the navigation controller
-    var goingForwards: Bool = false
+    var imageNames: [String] = [] // URL Strings
+    var goingForwards: Bool = false // Used to detect when the back button is tapped in the navigation controller
     
     override func viewDidLoad() {
         super.viewDidLoad()
