@@ -17,8 +17,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBOutlet weak var editDescription: UITextView!
     @IBOutlet weak var saveItemButton: UIBarButtonItem!
     @IBOutlet weak var importImageButton: UIButton!
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var tableView: UITableView!
     
+    let cellHeaderSpacingHeight: CGFloat = 15
     var getItem = Item()
     var imageStringNames: [String] = []
     var newImportedImages = [String]()
@@ -85,6 +86,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         saveItemButton.isEnabled = editName.text != ""
     }
     
+    // MARK: Handling Image Picker
     @IBAction func importButtonPressed(_ sender: Any) {
         imagePickerController = UIImagePickerController()
         imagePickerController?.delegate = self
@@ -157,7 +159,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         imageStringNames.append(urlString) // array that displays data on the collection view
         newImportedImages.append(urlString) // used to manage new images to posibly add them to realm or delete them from disk
-        collectionView.reloadData()
+        tableView.reloadData()
         
         goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
         self.imagePickerController?.dismiss(animated: true, completion: nil)
@@ -173,6 +175,41 @@ class CollectionImageCell: UICollectionViewCell {
         didSet {
             imageView.layer.cornerRadius = 10.0
         }
+    }
+}
+
+class TableViewImageCell: UITableViewCell {
+    @IBOutlet weak var imageViewPlaceholder: UIImageView! {
+        didSet {
+            self.imageViewPlaceholder.layer.cornerRadius = 10.0
+        }
+    }
+}
+
+extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return imageStringNames.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! TableViewImageCell
+        let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row])
+        cell.imageViewPlaceholder.image = image
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row]) {
+            let imageCrop = image.getImageRatio()
+            return tableView.frame.width / imageCrop
+        } else {
+            return tableView.frame.width / 1.77
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return cellHeaderSpacingHeight
     }
 }
 
