@@ -18,12 +18,13 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     @IBOutlet weak var importImageButton: UIButton!
     @IBOutlet weak var collectionView: UICollectionView!
     
-    let imagePickerController = UIImagePickerController()
+    var imagePickerController: UIImagePickerController?
     var imageNames: [String] = [] // URL Strings
     var goingForwards: Bool = false // Used to detect when the back button is tapped in the navigation controller
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
         itemNameField.delegate = self
         // Hides the keyboard when user taps anywhere else other than the keyboard
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
@@ -36,11 +37,11 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         itemNameField.layer.cornerRadius = 8
         itemNameField.layer.borderWidth = 1
         itemNameField.layer.borderColor = UIColor.black.cgColor
-        
+
         itemDescripField.layer.cornerRadius = 8
         itemDescripField.layer.borderWidth = 1
         itemDescripField.layer.borderColor = UIColor.black.cgColor
-        
+
         importImageButton.layer.cornerRadius = 8
         importImageButton.layer.borderWidth = 1
         importImageButton.layer.borderColor = UIColor.black.cgColor
@@ -64,6 +65,8 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     }
     
     @IBAction func importButtonPressed(_ sender: Any) {
+        imagePickerController = UIImagePickerController()
+        guard let imagePickerController = imagePickerController else { return }
         imagePickerController.delegate = self
         
         let actionPopUp = UIAlertController(title: "Photo Source", message: "Choose a source", preferredStyle: .alert)
@@ -86,8 +89,8 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
             // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
             self.goingForwards = true
 
-            self.imagePickerController.sourceType = .photoLibrary
-            self.present(self.imagePickerController, animated: true, completion: nil)
+            self.imagePickerController?.sourceType = .photoLibrary
+            self.present(imagePickerController, animated: true, completion: nil)
         }))
         
         actionPopUp.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -105,9 +108,11 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     func presentCamera() {
         // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
         goingForwards = true
+        
+        guard let imagePickerController = imagePickerController else { return }
 
-        self.imagePickerController.sourceType = .camera
-        self.present(self.imagePickerController, animated: true, completion: nil)
+        self.imagePickerController?.sourceType = .camera
+        self.present(imagePickerController, animated: true, completion: nil)
     }
     
     func cameraAccessNeeded() {
@@ -136,11 +141,13 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         collectionView.reloadData()
         
         goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
-        self.imagePickerController.dismiss(animated: true, completion: nil)
+        guard let imagePickerController = imagePickerController else { return }
+        imagePickerController.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.imagePickerController.dismiss(animated: true, completion: nil)
+        guard let imagePickerController = imagePickerController else { return }
+        imagePickerController.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func doneButtonPressed(_ sender: Any) {

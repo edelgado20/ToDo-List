@@ -22,7 +22,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var getItem = Item()
     var imageStringNames: [String] = []
     var newImportedImages = [String]()
-    let imagePickerController = UIImagePickerController()
+    var imagePickerController: UIImagePickerController?
     var goingForwards: Bool = false // Detect when the back button is tapped in the nav controller to delete images from the file service
 
     override func viewDidLoad() {
@@ -86,7 +86,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @IBAction func importButtonPressed(_ sender: Any) {
-        imagePickerController.delegate = self
+        imagePickerController = UIImagePickerController()
+        imagePickerController?.delegate = self
         
         let actionPopUp = UIAlertController(title: "Photo Source", message: "Choose a source", preferredStyle: .alert)
         
@@ -107,8 +108,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
             self.goingForwards = true
             
-            self.imagePickerController.sourceType = .photoLibrary
-            self.present(self.imagePickerController, animated: true, completion: nil)
+            guard let imagePickerController = self.imagePickerController else { return }
+            imagePickerController.sourceType = .photoLibrary
+            self.present(imagePickerController, animated: true, completion: nil)
         }))
         
         actionPopUp.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
@@ -127,8 +129,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // Set to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
         goingForwards = true
         
-        self.imagePickerController.sourceType = .camera
-        self.present(self.imagePickerController, animated: true, completion: nil)
+        guard let imagePickerController = self.imagePickerController else { return }
+        imagePickerController.sourceType = .camera
+        self.present(imagePickerController, animated: true, completion: nil)
     }
     
     func cameraAccessNeeded() {
@@ -157,11 +160,11 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         collectionView.reloadData()
         
         goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
-        self.imagePickerController.dismiss(animated: true, completion: nil)
+        self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.imagePickerController.dismiss(animated: true, completion: nil)
+        self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
 }
 
