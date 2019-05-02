@@ -16,7 +16,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     @IBOutlet weak var itemNameField: UITextField!
     @IBOutlet weak var itemDescripField: UITextView!
     @IBOutlet weak var importImageButton: UIButton!
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var tableView: UITableView!
     
     var imagePickerController: UIImagePickerController?
     var imageNames: [String] = [] // URL Strings
@@ -29,6 +29,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         // Hides the keyboard when user taps anywhere else other than the keyboard
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         realm = try! Realm()
+        tableView.tableFooterView = UIView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -138,7 +139,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         guard let url = try? FileService.write(image: resizeImage) else { return }
         
         imageNames.append(url)// temporarely append the urlString
-        collectionView.reloadData()
+        tableView.reloadData()
         
         goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
         guard let imagePickerController = imagePickerController else { return }
@@ -175,36 +176,35 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     }
 }
 
-extension AddItemVC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageNames.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! ImageCell
-        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row])
-        cell.imgView.image = image
-        
-        return cell
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // Get the image ratio to calculate the cell height dynamically
-        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row]) {
-            let imageRatio = image.getImageRatio()
-            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / imageRatio)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / 1.5)
+class ImageCell: UITableViewCell {
+    @IBOutlet weak var imgView: UIImageView! {
+        didSet {
+            imgView.layer.cornerRadius = 10.0
         }
     }
     
 }
 
-class ImageCell: UICollectionViewCell {
-    @IBOutlet weak var imgView: UIImageView! {
-        didSet {
-            imgView.layer.cornerRadius = 10.0
+extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return imageNames.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! ImageCell
+        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row])
+        cell.imgView.image = image
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        // Get the image ratio to calculate the cell height dynamically
+        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row]) {
+            let imageRatio = image.getImageRatio()
+            return tableView.frame.width / imageRatio
+        } else {
+            return tableView.frame.width / 1.77
         }
     }
 }

@@ -19,7 +19,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBOutlet weak var importImageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
-    let cellHeaderSpacingHeight: CGFloat = 15
+    //let cellHeaderSpacingHeight: CGFloat = 5
     var getItem = Item()
     var imageStringNames: [String] = []
     var newImportedImages = [String]()
@@ -36,6 +36,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         editName.delegate = self
         // Hides the keyboard when user taps anywhere else other than the keyboard
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
+        tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -170,14 +171,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
 }
 
-class CollectionImageCell: UICollectionViewCell {
-    @IBOutlet weak var imageView: UIImageView! {
-        didSet {
-            imageView.layer.cornerRadius = 10.0
-        }
-    }
-}
-
 class TableViewImageCell: UITableViewCell {
     @IBOutlet weak var imageViewPlaceholder: UIImageView! {
         didSet {
@@ -208,32 +201,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return cellHeaderSpacingHeight
-    }
+//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//        return cellHeaderSpacingHeight
+//    }
 }
-
-extension Edit_Item_VC: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageStringNames.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! CollectionImageCell
-        let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row])
-        cell.imageView.image = image
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row]) {
-            let imageRatio = image.getImageRatio()
-            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / imageRatio)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: collectionView.frame.width / 1.5)
-        }
-    }
-}
-
-
