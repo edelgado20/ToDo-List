@@ -19,7 +19,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBOutlet weak var importImageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
-    //let cellHeaderSpacingHeight: CGFloat = 5
+    let cellHeaderSpacingHeight: CGFloat = 8
     var getItem = Item()
     var imageStringNames: [String] = []
     var newImportedImages = [String]()
@@ -172,23 +172,41 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
 }
 
 class TableViewImageCell: UITableViewCell {
-    @IBOutlet weak var imageViewPlaceholder: UIImageView! {
-        didSet {
-            self.imageViewPlaceholder.layer.cornerRadius = 10.0
-        }
-    }
+    @IBOutlet weak var imageViewPlaceholder: UIImageView!
 }
 
 extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    // Create a new section(rather than a row) for each item, so sections can then be spaced using section header height
+    // https://stackoverflow.com/questions/6216839/how-to-add-spacing-between-uitableviewcell/33931591#33931591
+    func numberOfSections(in tableView: UITableView) -> Int {
         return imageStringNames.count
     }
     
+    // There is just one row in every section
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    // Set the spacing between sections
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return cellHeaderSpacingHeight
+    }
+    
+    // Make the background color show through
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = UIColor.clear
+        return headerView
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! TableViewImageCell
-        let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row])
+        //let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! TableViewImageCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! TableViewImageCell
+        let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.section])
         cell.imageViewPlaceholder.image = image
-        
+        cell.layer.cornerRadius = 10
+        //cell.clipsToBounds = true
+     
         return cell
     }
     
@@ -200,8 +218,4 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             return tableView.frame.width / 1.77
         }
     }
-    
-//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//        return cellHeaderSpacingHeight
-//    }
 }

@@ -18,6 +18,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     @IBOutlet weak var importImageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
+    let cellHeaderSpacingHeight: CGFloat = 8
     var imagePickerController: UIImagePickerController?
     var imageNames: [String] = [] // URL Strings
     var goingForwards: Bool = false // Used to detect when the back button is tapped in the navigation controller
@@ -177,23 +178,35 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
 }
 
 class ImageCell: UITableViewCell {
-    @IBOutlet weak var imgView: UIImageView! {
-        didSet {
-            imgView.layer.cornerRadius = 10.0
-        }
-    }
-    
+    @IBOutlet weak var imgView: UIImageView!
 }
 
 extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return imageNames.count
     }
     
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return cellHeaderSpacingHeight
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = UIColor.clear
+        return headerView
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! ImageCell
-        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row])
+        //let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! ImageCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
+        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section])
         cell.imgView.image = image
+        cell.layer.cornerRadius = 10
+        //cell.clipsToBounds = true
         
         return cell
     }
