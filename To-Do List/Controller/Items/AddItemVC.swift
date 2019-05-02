@@ -201,19 +201,17 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! ImageCell
         let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
         let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section])
         cell.imgView.image = image
         cell.layer.cornerRadius = 10
-        //cell.clipsToBounds = true
         
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         // Get the image ratio to calculate the cell height dynamically
-        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row]) {
+        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section]) {
             let imageRatio = image.getImageRatio()
             return tableView.frame.width / imageRatio
         } else {

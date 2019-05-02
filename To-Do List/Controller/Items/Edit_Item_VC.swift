@@ -200,18 +200,16 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! TableViewImageCell
         let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! TableViewImageCell
         let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.section])
         cell.imageViewPlaceholder.image = image
         cell.layer.cornerRadius = 10
-        //cell.clipsToBounds = true
      
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row]) {
+        if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.section]) {
             let imageCrop = image.getImageRatio()
             return tableView.frame.width / imageCrop
         } else {
