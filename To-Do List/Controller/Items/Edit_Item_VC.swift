@@ -226,15 +226,23 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
         let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
-            // remove the item from the data model
-            
+            /* Remove the item from the data model (Local Array & posibly RealmDB) */
+            // We remove the image from the array this way because the images are displayed reversed on the tableView
             let count = self.imageStringNames.count
-            self.imageStringNames.remove(at: (count - 1) - indexPath.section)
+            let index = (count - 1) - indexPath.section
+            let imageString = self.imageStringNames.remove(at: index)
             
+            if self.getItem.imageNames.contains(imageString) {
+                // remove from RealmDB
+                try! self.realm?.write {
+                    self.getItem.imageNames.remove(at: index)
+                }
+            }
+            // remove from FileService
+            try? FileService.delete(filename: imageString)
             
-            // delete the table view section
+            // delete the tableView section
             let indexSet = IndexSet(arrayLiteral: indexPath.section)
-            
             self.tableView.deleteSections(indexSet, with: .fade)
             
             completion(true)
