@@ -216,4 +216,32 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             return tableView.frame.width / 1.77
         }
     }
+    
+    // deletes image
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let delete = deleteAction(at: indexPath)
+        
+        return UISwipeActionsConfiguration(actions: [delete])
+    }
+    
+    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
+        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            // remove the item from the data model
+            
+            let count = self.imageStringNames.count
+            self.imageStringNames.remove(at: (count - 1) - indexPath.section)
+            
+            
+            // delete the table view section
+            let indexSet = IndexSet(arrayLiteral: indexPath.section)
+            
+            self.tableView.deleteSections(indexSet, with: .fade)
+            
+            completion(true)
+        }
+        action.image = UIImage(named: "trash")
+        action.backgroundColor = .red
+        
+        return action
+    }
 }
