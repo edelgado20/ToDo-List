@@ -231,6 +231,8 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             let count = self.imageStringNames.count
             let index = (count - 1) - indexPath.section
             let imageString = self.imageStringNames.remove(at: index)
+            // Removes if it's a newImage that gets deleted before tapping save to make sure it doesn't save it to realm
+            self.newImportedImages.removeAll(where: { $0 == imageString })
             
             if self.getItem.imageNames.contains(imageString) {
                 // remove from RealmDB
