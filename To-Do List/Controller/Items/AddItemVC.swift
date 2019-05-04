@@ -152,7 +152,12 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         imagePickerController.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func doneButtonPressed(_ sender: Any) {
+    @IBAction func doneButtonPressed(_ sender: Any) { 
+        if ((itemNameField.text?.trimmingCharacters(in: .whitespaces).isEmpty)!) {
+            _ = navigationController?.popViewController(animated: true)
+            return
+        }
+        
         let item = Item()
         item.name = itemNameField.text!
         item.descrip = itemDescripField.text
@@ -166,11 +171,8 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         // Store the URL strings of the images to Realm
         item.imageNames.append(objectsIn: imageNames)
         
-        // Do not add an item without a name
-        if !item.name.isEmpty {
-            try! self.realm.write {
-                self.realm.add(item)
-            }
+        try! self.realm.write {
+            self.realm.add(item)
         }
         
         _ = navigationController?.popViewController(animated: true)
@@ -217,6 +219,32 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
         } else {
             return tableView.frame.width / 1.77
         }
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let delete = deleteAction(at: indexPath)
+        
+        return UISwipeActionsConfiguration(actions: [delete])
+    }
+    
+    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
+        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            // delete the image this way because array is displayed reversed on the tableView
+            let count = self.imageNames.count
+            let index = (count - 1) - indexPath.section
+            let imageString = self.imageNames.remove(at: index)
+            
+            try? FileService.delete(filename: imageString)
+        
+            let indexSet = IndexSet(arrayLiteral: indexPath.section)
+            self.tableView.deleteSections(indexSet, with: .fade)
+            
+            completion(true)
+        }
+        action.image = UIImage(named: "trash")
+        action.backgroundColor = UIColor.red
+        
+        return action
     }
 }
 
