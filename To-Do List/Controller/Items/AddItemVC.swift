@@ -16,37 +16,34 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     @IBOutlet weak var itemNameField: UITextField!
     @IBOutlet weak var itemDescripField: UITextView!
     @IBOutlet weak var importImageButton: UIButton!
+    
     @IBOutlet weak var tableView: UITableView!
     
     let cellHeaderSpacingHeight: CGFloat = 8
     var imagePickerController: UIImagePickerController?
     var imageNames: [String] = [] // URL Strings
     var goingForwards: Bool = false // Used to detect when the back button is tapped in the navigation controller
+    let fieldsArray = [
+        ["calendar", "Due Date"],
+        ["bell", "Reminder"],
+        ["pen", "Add a note..."],
+        ["paperclipIcon", "Import an image"]
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
     
-        itemNameField.delegate = self
+        //itemNameField.delegate = self
         // Hides the keyboard when user taps anywhere else other than the keyboard
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         realm = try! Realm()
         tableView.tableFooterView = UIView()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        itemNameField.layer.cornerRadius = 8
-        itemNameField.layer.borderWidth = 1
-        itemNameField.layer.borderColor = UIColor.black.cgColor
-
-        itemDescripField.layer.cornerRadius = 8
-        itemDescripField.layer.borderWidth = 1
-        itemDescripField.layer.borderColor = UIColor.black.cgColor
-
-        importImageButton.layer.cornerRadius = 8
-        importImageButton.layer.borderWidth = 1
-        importImageButton.layer.borderColor = UIColor.black.cgColor
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -54,11 +51,11 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         
         /* This checks when the user is going back or tapped on the done button without inserting a name.
            It deletes all images the were written on the disk for this uncreated item, if any. */
-        if itemNameField.text?.isEmpty ?? true && !goingForwards{
-            imageNames.forEach {
-                try? FileService.delete(filename: $0)
-            }
-        }
+//        if itemNameField.text?.isEmpty ?? true && !goingForwards{
+//            imageNames.forEach {
+//                try? FileService.delete(filename: $0)
+//            }
+//        }
     }
     // hides keyboard when pressed on return key
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -152,7 +149,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         imagePickerController.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func doneButtonPressed(_ sender: Any) { 
+    @IBAction func doneButtonPressed(_ sender: Any) {
         if ((itemNameField.text?.trimmingCharacters(in: .whitespaces).isEmpty)!) {
             _ = navigationController?.popViewController(animated: true)
             return
@@ -183,69 +180,99 @@ class ImageCell: UITableViewCell {
     @IBOutlet weak var imgView: UIImageView!
 }
 
+class FieldCell: UITableViewCell {
+    @IBOutlet weak var iconPlaceholder: UIImageView!
+    @IBOutlet weak var fieldLabel: UILabel!
+}
+
 extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return imageNames.count
+        return 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        if section == 0 {
+            return fieldsArray.count
+        } else {
+            return imageNames.count
+        }
     }
     
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return cellHeaderSpacingHeight
-    }
+//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//        return cellHeaderSpacingHeight
+//    }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
-        headerView.backgroundColor = UIColor.clear
-        return headerView
-    }
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        let headerView = UIView()
+//        headerView.backgroundColor = UIColor.clear
+//        return headerView
+//    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
-        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section])
-        cell.imgView.image = image
-        cell.layer.cornerRadius = 10
-        
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        // Get the image ratio to calculate the cell height dynamically
-        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section]) {
-            let imageRatio = image.getImageRatio()
-            return tableView.frame.width / imageRatio
+
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell") as! FieldCell
+            cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
+            cell.fieldLabel.text = fieldsArray[indexPath.row][1]
+            
+            return cell
         } else {
-            return tableView.frame.width / 1.77
+            print("Section 2")
+            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
+            let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row])
+            cell.imgView.image = image
+            cell.layer.cornerRadius = 10 
+            
+            return cell
         }
+        
+        
+        
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
+//        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section])
+//        cell.imgView.image = image
+//        cell.layer.cornerRadius = 10
+        
+        //return cell
     }
     
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let delete = deleteAction(at: indexPath)
-        
-        return UISwipeActionsConfiguration(actions: [delete])
-    }
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        // Get the image ratio to calculate the cell height dynamically
+//        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section]) {
+//            let imageRatio = image.getImageRatio()
+//            return tableView.frame.width / imageRatio
+//        } else {
+//            return tableView.frame.width / 1.77
+//        }
+//    }
     
-    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
-        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
-            // delete the image this way because array is displayed reversed on the tableView
-            let count = self.imageNames.count
-            let index = (count - 1) - indexPath.section
-            let imageString = self.imageNames.remove(at: index)
-            
-            try? FileService.delete(filename: imageString)
-        
-            let indexSet = IndexSet(arrayLiteral: indexPath.section)
-            self.tableView.deleteSections(indexSet, with: .fade)
-            
-            completion(true)
-        }
-        action.image = UIImage(named: "trash")
-        action.backgroundColor = UIColor.red
-        
-        return action
-    }
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let delete = deleteAction(at: indexPath)
+//
+//        return UISwipeActionsConfiguration(actions: [delete])
+//    }
+//
+//    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
+//        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+//            // delete the image this way because array is displayed reversed on the tableView
+//            let count = self.imageNames.count
+//            let index = (count - 1) - indexPath.section
+//            let imageString = self.imageNames.remove(at: index)
+//
+//            try? FileService.delete(filename: imageString)
+//
+//            let indexSet = IndexSet(arrayLiteral: indexPath.section)
+//            self.tableView.deleteSections(indexSet, with: .fade)
+//
+//            completion(true)
+//        }
+//        action.image = UIImage(named: "trash")
+//        action.backgroundColor = UIColor.red
+//
+//        return action
+//    }
+    
 }
 
 extension UIImage {
