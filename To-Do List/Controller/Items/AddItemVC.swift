@@ -30,15 +30,29 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         ["paperclipIcon", "Import an image"]
     ]
     
+    enum TableSection: Int {
+        case fields = 0
+        case images = 1
+    }
+    
+    enum FieldsSectionRows: Int {
+        case dueDate = 0
+        case reminder = 1
+        case note = 2
+        case importImage = 3
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
         //itemNameField.delegate = self
+        
         // Hides the keyboard when user taps anywhere else other than the keyboard
-        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
+        //self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
+        
         realm = try! Realm()
         tableView.tableFooterView = UIView()
-        
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -63,7 +77,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         return true
     }
     
-    @IBAction func importButtonPressed(_ sender: Any) {
+    func importImageCellPressed() {
         imagePickerController = UIImagePickerController()
         guard let imagePickerController = imagePickerController else { return }
         imagePickerController.delegate = self
@@ -192,7 +206,7 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
+        if section == TableSection.fields.rawValue {
             return fieldsArray.count
         } else {
             return imageNames.count
@@ -211,7 +225,7 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        if indexPath.section == 0 {
+        if indexPath.section == TableSection.fields.rawValue {
             let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell") as! FieldCell
             cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
             cell.fieldLabel.text = fieldsArray[indexPath.row][1]
@@ -226,15 +240,20 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
             
             return cell
         }
-        
-        
-        
+
 //        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
 //        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section])
 //        cell.imgView.image = image
 //        cell.layer.cornerRadius = 10
         
         //return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == TableSection.fields.rawValue && indexPath.row == FieldsSectionRows.importImage.rawValue {
+            importImageCellPressed()
+        }
+        
     }
     
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
