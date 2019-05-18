@@ -73,7 +73,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("prepareForSegue")
         //guard let identifier = segue.identifier else { return }
         
         switch segue.destination {

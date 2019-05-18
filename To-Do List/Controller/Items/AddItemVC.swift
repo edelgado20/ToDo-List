@@ -35,7 +35,7 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         case images = 1
     }
     
-    enum FieldsSectionRows: Int {
+    enum FieldRow: Int {
         case dueDate = 0
         case reminder = 1
         case note = 2
@@ -44,15 +44,12 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-        //itemNameField.delegate = self
         
         // Hides the keyboard when user taps anywhere else other than the keyboard
         //self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         
         realm = try! Realm()
         tableView.tableFooterView = UIView()
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -82,33 +79,36 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
         guard let imagePickerController = imagePickerController else { return }
         imagePickerController.delegate = self
         
-        let actionPopUp = UIAlertController(title: "Photo Source", message: "Choose a source", preferredStyle: .alert)
-        
-        actionPopUp.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action: UIAlertAction) in
-            // I used a this resource https://www.andrewcbancroft.com/2018/02/24/swift-cheat-sheet-for-iphone-camera-access-usage/
-            // to help out when a user decides not to allow access and then try's to access the camera. It leads them to their settins
-            let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+        DispatchQueue.main.async {
+            let actionPopUp = UIAlertController(title: "Photo Source", message: "Choose a source", preferredStyle: .actionSheet)
             
-            switch cameraStatus {
+            actionPopUp.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action: UIAlertAction) in
+                // I used a this resource https://www.andrewcbancroft.com/2018/02/24/swift-cheat-sheet-for-iphone-camera-access-usage/
+                // to help out when a user decides not to allow access and then try's to access the camera. It leads them to their settins
+                let cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+                
+                switch cameraStatus {
                 case .notDetermined: self.requestCameraPermission()
                 case .authorized: self.presentCamera()
                 case .restricted, .denied: self.cameraAccessNeeded()
-            @unknown default:
-                print("Unknown camera status")
-            }
-        }))
-        
-        actionPopUp.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action: UIAlertAction) in
-            // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
-            self.goingForwards = true
-
-            self.imagePickerController?.sourceType = .photoLibrary
-            self.present(imagePickerController, animated: true, completion: nil)
-        }))
-        
-        actionPopUp.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        self.present(actionPopUp, animated: true, completion: nil)
+                @unknown default:
+                    print("Unknown camera status")
+                }
+            }))
+            
+            actionPopUp.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action: UIAlertAction) in
+                // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
+                self.goingForwards = true
+                
+                self.imagePickerController?.sourceType = .photoLibrary
+                self.present(imagePickerController, animated: true, completion: nil)
+            }))
+            
+            actionPopUp.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            self.present(actionPopUp, animated: true, completion: nil)
+        }
+       
     }
     
     func requestCameraPermission() {
@@ -236,7 +236,6 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
             let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
             let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row])
             cell.imgView.image = image
-            cell.layer.cornerRadius = 10 
             
             return cell
         }
@@ -250,21 +249,32 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == TableSection.fields.rawValue && indexPath.row == FieldsSectionRows.importImage.rawValue {
+        if indexPath.section == TableSection.fields.rawValue && indexPath.row == FieldRow.importImage.rawValue {
             importImageCellPressed()
         }
         
     }
     
-//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        // Get the image ratio to calculate the cell height dynamically
-//        if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section]) {
-//            let imageRatio = image.getImageRatio()
-//            return tableView.frame.width / imageRatio
-//        } else {
-//            return tableView.frame.width / 1.77
-//        }
-//    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == TableSection.fields.rawValue {
+            if indexPath.row == FieldRow.note.rawValue {
+                return 75
+            } else {
+                return 45
+            }
+        } else { // Images Section
+            // Get the image ratio to calculate the cell height dynamically
+            if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row]) {
+                let imageRatio = image.getImageRatio()
+                print("Image Ratio")
+                print(tableView.frame.width / imageRatio)
+                print((tableView.frame.width-56) / imageRatio)
+                return (tableView.frame.width-56) / imageRatio
+            } else {
+                return tableView.frame.width / 1.77
+            }
+        }
+    }
     
 //    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
 //        let delete = deleteAction(at: indexPath)
