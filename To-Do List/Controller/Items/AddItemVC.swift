@@ -230,6 +230,10 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
             cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
             cell.fieldLabel.text = fieldsArray[indexPath.row][1]
             
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = UIColor.blue
+            cell.backgroundView = backgroundView
+            
             return cell
         } else {
             print("Section 2")
@@ -266,12 +270,10 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
             // Get the image ratio to calculate the cell height dynamically
             if let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.row]) {
                 let imageRatio = image.getImageRatio()
-                print("Image Ratio")
-                print(tableView.frame.width / imageRatio)
-                print((tableView.frame.width-56) / imageRatio)
-                return (tableView.frame.width-56) / imageRatio
-            } else {
-                return tableView.frame.width / 1.77
+                /* Calculation: Get the tableView width minus the leading and trailing constraints divided by the imageRatio. Then add the top and bottom constraints */
+                return ((tableView.frame.width-56) / imageRatio) + 8
+            } else { //No Image
+                return 0
             }
         }
     }
