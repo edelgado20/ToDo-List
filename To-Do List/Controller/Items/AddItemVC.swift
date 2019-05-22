@@ -55,6 +55,11 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Deselect selected cell
+        if let index = self.tableView.indexPathForSelectedRow {
+            self.tableView.deselectRow(at: index, animated: true)
+        }
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -230,9 +235,10 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
             cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
             cell.fieldLabel.text = fieldsArray[indexPath.row][1]
             
+            // Create a background view to change the cell color when selected
             let backgroundView = UIView()
-            backgroundView.backgroundColor = UIColor.blue
-            cell.backgroundView = backgroundView
+            backgroundView.backgroundColor = UIColor.init(hexString: "#CDDFF4")
+            cell.selectedBackgroundView = backgroundView
             
             return cell
         } else {

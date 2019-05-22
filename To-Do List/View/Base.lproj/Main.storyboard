@@ -467,13 +467,12 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a note..." textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="z67-2s-uM0">
-                                                    <rect key="frame" x="46" y="11" width="306" height="20.5"/>
+                                                    <rect key="frame" x="46" y="11" width="298" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
+                                                    <color key="highlightedColor" red="0.0" green="0.40000000000000002" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstItem="YDJ-wX-K0f" firstAttribute="top" secondItem="Yug-8E-mok" secondAttribute="top" constant="11" id="Bmo-Rh-gLF"/>
                                                 <constraint firstItem="YDJ-wX-K0f" firstAttribute="leading" secondItem="Yug-8E-mok" secondAttribute="leading" constant="8" id="Ghi-74-MwR"/>
@@ -483,6 +482,11 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="4"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <outlet property="fieldLabel" destination="z67-2s-uM0" id="mXp-3D-lYi"/>
                                             <outlet property="iconPlaceholder" destination="YDJ-wX-K0f" id="WKU-zg-K02"/>
