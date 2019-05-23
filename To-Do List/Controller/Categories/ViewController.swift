@@ -124,6 +124,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         realm = try! Realm()
         print(Realm.Configuration.defaultConfiguration.fileURL!)
+        
+        navigationController?.navigationBar.barTintColor = UIColor.init(hexString: "#00A6CC")
+        navigationController?.navigationBar.tintColor = UIColor.white
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
     }
 
     override func viewWillAppear(_ animated: Bool) {

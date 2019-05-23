@@ -41,10 +41,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let realm = try! Realm()
 
         //Changes the navigation bar color
-        let navigationBarAppearace = UINavigationBar.appearance()
-        navigationBarAppearace.tintColor = UIColor.white
-        navigationBarAppearace.barTintColor = UIColor.init(hexString: "#00A6CC") //Turquoise Surf
-        navigationBarAppearace.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+//        let navigationBarAppearace = UINavigationBar.appearance()
+//        navigationBarAppearace.tintColor = UIColor.white
+//        navigationBarAppearace.barTintColor = UIColor.init(hexString: "#00A6CC") //Turquoise Surf
+//        navigationBarAppearace.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+        
         //Changes the status bar color (e.g provider, time, battery life, wifi)
         UIApplication.shared.statusBarStyle = .lightContent
 

@@ -259,8 +259,15 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == TableSection.fields.rawValue && indexPath.row == FieldRow.importImage.rawValue {
-            importImageCellPressed()
+        if indexPath.section == TableSection.fields.rawValue {
+            if indexPath.row == FieldRow.note.rawValue {
+                let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
+                present(noteVC, animated: true, completion: nil)
+            }
+            
+            if indexPath.row == FieldRow.importImage.rawValue {
+                importImageCellPressed()
+            }
         }
         
     }
