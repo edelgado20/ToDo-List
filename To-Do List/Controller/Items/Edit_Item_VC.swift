@@ -34,6 +34,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         imageStringNames.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
         editName.delegate = self
+        
         // Hides the keyboard when user taps anywhere else other than the keyboard
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty

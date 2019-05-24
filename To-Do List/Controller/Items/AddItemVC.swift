@@ -24,7 +24,6 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     var imageNames: [String] = [] // URL Strings
     var goingForwards: Bool = false // Used to detect when the back button is tapped in the navigation controller
     let fieldsArray = [
-        ["signature", "Item Name"],
         ["calendar", "Due Date"],
         ["bell", "Reminder"],
         ["pen", "Add a note..."],

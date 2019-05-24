@@ -10,11 +10,13 @@ import UIKit
 
 class NoteVC: UIViewController {
     @IBOutlet weak var navBar: UINavigationBar!
+    @IBOutlet weak var noteTextView: UITextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navBar.topItem?.titleView = setTitle(title: "Notes", subtitle: "Subtitle")
+        self.noteTextView.becomeFirstResponder() // make keyboard appear
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,16 +63,8 @@ class NoteVC: UIViewController {
     }
 
     @IBAction func dismissModalViewController(_ sender: Any) {
+        self.noteTextView.resignFirstResponder() // hide keyboard
         dismiss(animated: true, completion: nil)
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+    
 }
