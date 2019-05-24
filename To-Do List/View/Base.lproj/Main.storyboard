@@ -573,23 +573,39 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ttm-1g-yZ8">
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nY6-ny-2cF">
                                 <rect key="frame" x="0.0" y="20" width="375" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.0" green="0.97680455450000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <color key="barTintColor" red="1" green="0.83234566450000003" blue="0.47320586440000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="WpB-KH-rTQ"/>
+                                </constraints>
+                                <color key="barTintColor" red="1" green="1" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <items>
-                                    <navigationItem title="Title" id="8ye-Bh-hcT"/>
+                                    <navigationItem id="XLd-uv-jBr">
+                                        <barButtonItem key="rightBarButtonItem" title="Done" id="ZXY-TE-CUo">
+                                            <connections>
+                                                <action selector="dismissModalViewController:" destination="ZkH-tx-zdu" id="Tzq-Hj-4gX"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
                                 </items>
                             </navigationBar>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="0.83234566450000003" blue="0.47320586440000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="1" green="1" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="nY6-ny-2cF" firstAttribute="top" secondItem="gcz-uH-CU2" secondAttribute="top" id="Rj9-1K-K9A"/>
+                            <constraint firstItem="nY6-ny-2cF" firstAttribute="trailing" secondItem="gcz-uH-CU2" secondAttribute="trailing" id="bi5-3V-Sit"/>
+                            <constraint firstItem="nY6-ny-2cF" firstAttribute="leading" secondItem="gcz-uH-CU2" secondAttribute="leading" id="pkk-xF-mjB"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="gcz-uH-CU2"/>
                     </view>
+                    <connections>
+                        <outlet property="navBar" destination="nY6-ny-2cF" id="sgU-J6-wHA"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FPN-Qe-JbO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4159" y="-225"/>
+            <point key="canvasLocation" x="4357.6000000000004" y="-225.33733133433284"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="WZ3-GM-v7N">

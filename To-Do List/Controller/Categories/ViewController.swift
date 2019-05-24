@@ -134,7 +134,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         super.viewWillAppear(true)
 
         tableView.reloadData()
+        //self.setNeedsStatusBarAppearanceUpdate()
     }
+    
+//    override var preferredStatusBarStyle: UIStatusBarStyle {
+//        return .lightContent
+//    }
 
 }
 

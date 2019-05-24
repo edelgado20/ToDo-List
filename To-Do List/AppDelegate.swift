@@ -47,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        navigationBarAppearace.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         
         //Changes the status bar color (e.g provider, time, battery life, wifi)
-        UIApplication.shared.statusBarStyle = .lightContent
+        //UIApplication.shared.statusBarStyle = .lightContent
 
         return true
     }
