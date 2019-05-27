@@ -88,6 +88,18 @@ extension ItemsVC: UITableViewDelegate {
      edit?.getItem = itemsArray?[indexPath.row] ?? Item()
      self.navigationController?.pushViewController(edit!, animated: true)
      }*/
+    
+    // The empty space/view on top of the first tableview section (below the + tableview cell)
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = UIColor.clear
+
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return CGFloat(8)
+    }
 
     // deletes an item
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {

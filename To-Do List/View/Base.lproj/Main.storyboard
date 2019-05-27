@@ -222,9 +222,49 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="54" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="4LU-fB-6Vq">
                                 <rect key="frame" x="8" y="72" width="359" height="587"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <view key="tableHeaderView" contentMode="scaleToFill" id="5Ay-IJ-ubx" userLabel="HeaderView">
+                                    <rect key="frame" x="0.0" y="0.0" width="359" height="44"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PZ1-A0-v25">
+                                            <rect key="frame" x="13" y="8" width="25" height="28"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="PZ1-A0-v25" secondAttribute="height" multiplier="25:28" id="mwb-2T-nuJ"/>
+                                            </constraints>
+                                            <state key="normal" image="plusMath"/>
+                                        </button>
+                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Add an item..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8XX-x3-Mi8">
+                                            <rect key="frame" x="48" y="8" width="303" height="30"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="color" keyPath="_placeholderLabel.textColor">
+                                                    <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
+                                        </textField>
+                                    </subviews>
+                                    <color key="backgroundColor" red="0.0" green="0.65098039215686276" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="8XX-x3-Mi8" secondAttribute="bottom" constant="6" id="4ps-qj-Wph"/>
+                                        <constraint firstItem="PZ1-A0-v25" firstAttribute="top" secondItem="5Ay-IJ-ubx" secondAttribute="top" constant="8" id="7cD-B9-H3d"/>
+                                        <constraint firstAttribute="trailing" secondItem="8XX-x3-Mi8" secondAttribute="trailing" constant="8" id="F6h-t6-akS"/>
+                                        <constraint firstAttribute="bottom" secondItem="PZ1-A0-v25" secondAttribute="bottom" constant="8" id="Fow-ec-gGv"/>
+                                        <constraint firstItem="8XX-x3-Mi8" firstAttribute="top" secondItem="5Ay-IJ-ubx" secondAttribute="top" constant="8" id="nXR-2G-jAq"/>
+                                        <constraint firstItem="PZ1-A0-v25" firstAttribute="leading" secondItem="5Ay-IJ-ubx" secondAttribute="leading" constant="13" id="pcL-rF-V5V"/>
+                                        <constraint firstItem="8XX-x3-Mi8" firstAttribute="leading" secondItem="PZ1-A0-v25" secondAttribute="trailing" constant="10" id="pzz-1T-EYd"/>
+                                    </constraints>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="3"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
+                                </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="g28-Um-SoM" customClass="ItemCell" customModule="To_Do_List" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="359" height="54"/>
+                                        <rect key="frame" x="0.0" y="72" width="359" height="54"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="g28-Um-SoM" id="T5R-ps-zG5">
                                             <rect key="frame" x="0.0" y="0.0" width="359" height="54"/>
@@ -641,6 +681,7 @@
         <image name="check-square-regular" width="600" height="686"/>
         <image name="paperClip" width="31" height="28"/>
         <image name="pen" width="512" height="512"/>
+        <image name="plusMath" width="50" height="50"/>
         <image name="square-regular" width="600" height="686"/>
     </resources>
 </document>
