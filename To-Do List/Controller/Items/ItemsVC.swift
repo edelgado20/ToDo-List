@@ -13,6 +13,7 @@ import MobileCoreServices
 class ItemsVC: UIViewController {
 
     @IBOutlet weak var TABLEVIEW: UITableView!
+    @IBOutlet weak var doneButton: UIBarButtonItem!
     
     var realm: Realm? = nil
     var category: Category!
@@ -51,15 +52,41 @@ class ItemsVC: UIViewController {
         TABLEVIEW.dragDelegate = self
         TABLEVIEW.dropDelegate = self
         TABLEVIEW.dragInteractionEnabled = true
+        
+        doneButton.isEnabled = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        // https://stackoverflow.com/questions/4374436/how-to-detect-when-keyboard-is-shown-and-hidden
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
 
         self.title = category.name
         TABLEVIEW.reloadData() //reloads any new item into the table view(display)
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func keyboardWillAppear() {
+        doneButton.isEnabled = true
+        print("Keyboard will appear")
+    }
+    
+    @objc func keyboardWillDisappear() {
+        
+        print("Keyboard will disappear")
+    }
 
+    @IBAction func doneButtonPressed(_ sender: Any) {
+        print("Done button pressed")
+        
+    }
+    
 }
 
 extension ItemsVC: UITableViewDataSource {

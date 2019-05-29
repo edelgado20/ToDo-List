@@ -337,14 +337,15 @@
                         <viewLayoutGuide key="safeArea" id="H24-uB-LA0"/>
                     </view>
                     <navigationItem key="navigationItem" title="Items" id="KFb-zS-qWO">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="inE-4a-c8i">
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="inE-4a-c8i">
                             <connections>
-                                <segue destination="awK-sH-VHD" kind="push" identifier="addItemSegue" id="sq0-vf-XGd"/>
+                                <action selector="doneButtonPressed:" destination="dUW-62-7Bv" id="itp-MW-Vci"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="TABLEVIEW" destination="4LU-fB-6Vq" id="GLc-Bq-0BG"/>
+                        <outlet property="doneButton" destination="inE-4a-c8i" id="d7E-Rp-mWg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ea0-Kj-Gor" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -488,7 +489,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nRj-dy-fET">
-                                <rect key="frame" x="8" y="72" width="359" height="575"/>
+                                <rect key="frame" x="8" y="28" width="359" height="619"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <inset key="separatorInset" minX="47" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
