@@ -345,6 +345,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="TABLEVIEW" destination="4LU-fB-6Vq" id="GLc-Bq-0BG"/>
+                        <outlet property="addItemTextField" destination="8XX-x3-Mi8" id="nFz-YI-nAo"/>
                         <outlet property="doneButton" destination="inE-4a-c8i" id="d7E-Rp-mWg"/>
                     </connections>
                 </viewController>

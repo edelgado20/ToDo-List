@@ -14,6 +14,7 @@ class ItemsVC: UIViewController {
 
     @IBOutlet weak var TABLEVIEW: UITableView!
     @IBOutlet weak var doneButton: UIBarButtonItem!
+    @IBOutlet weak var addItemTextField: UITextField!
     
     var realm: Realm? = nil
     var category: Category!
@@ -48,7 +49,9 @@ class ItemsVC: UIViewController {
         super.viewDidLoad()
 
         realm = try! Realm()
-
+        
+        addItemTextField.delegate = self
+        
         TABLEVIEW.dragDelegate = self
         TABLEVIEW.dropDelegate = self
         TABLEVIEW.dragInteractionEnabled = true
@@ -74,19 +77,44 @@ class ItemsVC: UIViewController {
     
     @objc func keyboardWillAppear() {
         doneButton.isEnabled = true
-        print("Keyboard will appear")
     }
     
     @objc func keyboardWillDisappear() {
-        
-        print("Keyboard will disappear")
+        doneButton.isEnabled = false
     }
 
     @IBAction func doneButtonPressed(_ sender: Any) {
-        print("Done button pressed")
+        print("Sender: \(sender)")
+        defer { addItemTextField.resignFirstResponder() }
+        if ((addItemTextField.text?.trimmingCharacters(in: .whitespaces).isEmpty)!) {
+            return
+        } else {
+            let item = Item()
+            item.name = addItemTextField.text!
+            item.id += 1
+            item.category = category
+            
+            // Get the index based on the total items count (e.g 0,1,2,3 ...)
+            let predicate = NSPredicate(format: "category = %@", category)
+            if let count = realm?.objects(Item.self).filter(predicate).count {
+                item.index = count
+            }
+            
+            try! self.realm?.write {
+                self.realm?.add(item)
+            }
+        }
         
+        addItemTextField.text = ""
+        TABLEVIEW.reloadData()
     }
-    
+}
+
+extension ItemsVC: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        doneButtonPressed(textField)
+        return true
+    }
 }
 
 extension ItemsVC: UITableViewDataSource {
