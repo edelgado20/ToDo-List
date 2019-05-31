@@ -13,9 +13,6 @@ import AVFoundation
 class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var realm: Realm!
     var category: Category = Category()
-    @IBOutlet weak var itemNameField: UITextField!
-    @IBOutlet weak var itemDescripField: UITextView!
-    @IBOutlet weak var importImageButton: UIButton!
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -169,14 +166,8 @@ class AddItemVC: UIViewController, UITextFieldDelegate, UIImagePickerControllerD
     }
     
     @IBAction func doneButtonPressed(_ sender: Any) {
-        if ((itemNameField.text?.trimmingCharacters(in: .whitespaces).isEmpty)!) {
-            _ = navigationController?.popViewController(animated: true)
-            return
-        }
         
         let item = Item()
-        item.name = itemNameField.text!
-        item.descrip = itemDescripField.text
         item.id += 1
         item.category = self.category
         // Get the index based on the total items count (e.g 0,1,2,3 ...)
@@ -218,16 +209,6 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
         }
     }
     
-//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//        return cellHeaderSpacingHeight
-//    }
-    
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let headerView = UIView()
-//        headerView.backgroundColor = UIColor.clear
-//        return headerView
-//    }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         if indexPath.section == TableSection.fields.rawValue {
@@ -250,12 +231,6 @@ extension AddItemVC: UITableViewDataSource, UITableViewDelegate {
             return cell
         }
 
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! ImageCell
-//        let image = try? FileService.readImage(from: imageNames.reversed()[indexPath.section])
-//        cell.imgView.image = image
-//        cell.layer.cornerRadius = 10
-        
-        //return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

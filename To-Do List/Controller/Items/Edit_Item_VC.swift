@@ -13,10 +13,6 @@ import AVFoundation
 class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     var realm: Realm? = nil
     
-    @IBOutlet weak var editName: UITextField!
-    @IBOutlet weak var editDescription: UITextView!
-    @IBOutlet weak var saveItemButton: UIBarButtonItem!
-    @IBOutlet weak var importImageButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
     let cellHeaderSpacingHeight: CGFloat = 8
@@ -24,7 +20,25 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var imageStringNames: [String] = []
     var newImportedImages = [String]()
     var imagePickerController: UIImagePickerController?
-    var goingForwards: Bool = false // Detect when the back button is tapped in the nav controller to delete images from the file service
+    var goingForwards: Bool = false // Detect when back button is tapped in the navController to delete images from the file service
+    let fieldsArray = [
+        ["calendar", "Due Date"],
+        ["bell", "Reminder"],
+        ["pen", "Add a note..."],
+        ["paperclipIcon", "Import an image"]
+    ]
+    
+    enum TableSection: Int {
+        case fields = 0
+        case images = 1
+    }
+    
+    enum FieldRow: Int {
+        case dueDate = 0
+        case reminder = 1
+        case note = 2
+        case importImage = 3
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +47,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         //Get all images from the Item realm object
         imageStringNames.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
-        editName.delegate = self
         
         // Hides the keyboard when user taps anywhere else other than the keyboard
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
@@ -43,19 +56,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        editName.text = getItem.name
-        editName.layer.cornerRadius = 8
-        editName.layer.borderWidth = 1
-        editName.layer.borderColor = UIColor.black.cgColor
-        
-        editDescription.text = getItem.descrip
-        editDescription.layer.cornerRadius = 8
-        editDescription.layer.borderWidth = 1
-        editDescription.layer.borderColor = UIColor.black.cgColor
-        
-        importImageButton.layer.cornerRadius = 8
-        importImageButton.layer.borderWidth = 1
-        importImageButton.layer.borderColor = UIColor.black.cgColor
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -76,20 +76,15 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBAction func saveEditItem(_ sender: Any) {
         goingForwards = true // bool prevents from deleting the images on the file service on the viewDisapper()
         try! self.realm?.write {
-            getItem.name = editName.text ?? ""
-            getItem.descrip = editDescription.text
+//            getItem.descrip = editDescription.text
             getItem.imageNames.append(objectsIn: newImportedImages)
         }
         
         navigationController?.popViewController(animated: true)
     }
     
-    @IBAction func itemNameTextField(_ sender: Any) {
-        saveItemButton.isEnabled = editName.text != ""
-    }
-    
     // MARK: Handling Image Picker
-    @IBAction func importButtonPressed(_ sender: Any) {
+    func importImageCellPressed() {
         imagePickerController = UIImagePickerController()
         imagePickerController?.delegate = self
         
@@ -173,48 +168,81 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
 }
 
 class TableViewImageCell: UITableViewCell {
-    @IBOutlet weak var imageViewPlaceholder: UIImageView!
+    @IBOutlet weak var imgView: UIImageView!
+}
+
+class TableViewFieldCell: UITableViewCell {
+    @IBOutlet weak var iconPlaceholder: UIImageView!
+    @IBOutlet weak var fieldLabel: UILabel!
 }
 
 extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
-    // Create a new section(rather than a row) for each item, so sections can then be spaced using section header height
-    // https://stackoverflow.com/questions/6216839/how-to-add-spacing-between-uitableviewcell/33931591#33931591
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return imageStringNames.count
+        return 2
     }
     
     // There is just one row in every section
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    // Set the spacing between sections
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return cellHeaderSpacingHeight
-    }
-    
-    // Make the background color show through
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
-        headerView.backgroundColor = UIColor.clear
-        return headerView
+        if section == TableSection.fields.rawValue {
+            return fieldsArray.count
+        } else {
+            return imageStringNames.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! TableViewImageCell
-        let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.section])
-        cell.imageViewPlaceholder.image = image
-        cell.layer.cornerRadius = 10
-     
-        return cell
+        if indexPath.section == TableSection.fields.rawValue {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell") as! TableViewFieldCell
+            cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
+            cell.fieldLabel.text = fieldsArray[indexPath.row][1]
+            
+            // Create a background view to change the cell color when selected
+            let backgroundView = UIView()
+            backgroundView.backgroundColor = UIColor.init(hexString: "#CDDFF4")
+            cell.selectedBackgroundView = backgroundView
+            
+            return cell
+        } else {
+            print("Section 2")
+            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! TableViewImageCell
+            let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row])
+            cell.imgView.image = image
+            
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == TableSection.fields.rawValue {
+            if indexPath.row == FieldRow.note.rawValue {
+                let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
+                present(noteVC, animated: true, completion: nil)
+            }
+            
+            if indexPath.row == FieldRow.importImage.rawValue {
+                importImageCellPressed()
+            }
+        }
+        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.section]) {
-            let imageCrop = image.getImageRatio()
-            return tableView.frame.width / imageCrop
-        } else {
-            return tableView.frame.width / 1.77
+        if indexPath.section == TableSection.fields.rawValue {
+            if indexPath.row == FieldRow.note.rawValue {
+                return 75
+            } else {
+                return 45
+            }
+        } else { // Images Section
+            // Get the image ratio to calculate the cell height dynamically
+            if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row]) {
+                let imageRatio = image.getImageRatio()
+                /* Calculation: Get the tableView width minus the leading and trailing constraints divided by the imageRatio. Then add the top and bottom constraints */
+                return ((tableView.frame.width-56) / imageRatio) + 8
+            } else { //No Image
+                return 0
+            }
         }
     }
     

@@ -24,7 +24,7 @@ class ItemsVC: UIViewController {
         get {
             let predicate = NSPredicate(format: "category = %@", category)
             //first sort by the index and then by completed
-            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "index").sorted(byKeyPath: "completed")
+            return realm?.objects(Item.self).filter(predicate).sorted(byKeyPath: "index", ascending: false).sorted(byKeyPath: "completed")
         }
     }
 
