@@ -20,7 +20,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var imageStringNames: [String] = []
     var newImportedImages = [String]()
     var imagePickerController: UIImagePickerController?
-    var goingForwards: Bool = false // Detect when back button is tapped in the navController to delete images from the file service
     let fieldsArray = [
         ["calendar", "Due Date"],
         ["bell", "Reminder"],
@@ -44,12 +43,16 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         super.viewDidLoad()
         
         realm = try! Realm()
+        
+ 
         //Get all images from the Item realm object
         imageStringNames.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
         
         // Hides the keyboard when user taps anywhere else other than the keyboard
-        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
+        // https://stackoverflow.com/questions/34030387/uitableview-didselectrowatindexpath-not-being-called
+//        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
+        
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
     }
     
@@ -60,13 +63,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // This boolean checks when the user is going back. It deletes all images the were written on the FileService/Disk
-        if !goingForwards {
-            newImportedImages.forEach {
-                try? FileService.delete(filename: $0)
-            }
-        }
     }
+    
     // hides keyboard when pressed on return key
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -74,7 +72,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @IBAction func saveEditItem(_ sender: Any) {
-        goingForwards = true // bool prevents from deleting the images on the file service on the viewDisapper()
         try! self.realm?.write {
 //            getItem.descrip = editDescription.text
             getItem.imageNames.append(objectsIn: newImportedImages)
@@ -104,8 +101,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }))
         
         actionPopUp.addAction(UIAlertAction(title: "Photo Library", style: .default, handler: { (action: UIAlertAction) in
-            // We set it to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
-            self.goingForwards = true
             
             guard let imagePickerController = self.imagePickerController else { return }
             imagePickerController.sourceType = .photoLibrary
@@ -125,9 +120,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     func presentCamera() {
-        // Set to true because were leaving the current view controller and going forward to the imagePicker(Photo Library)
-        goingForwards = true
-        
         guard let imagePickerController = self.imagePickerController else { return }
         imagePickerController.sourceType = .camera
         self.present(imagePickerController, animated: true, completion: nil)
@@ -158,7 +150,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         newImportedImages.append(urlString) // used to manage new images to posibly add them to realm or delete them from disk
         tableView.reloadData()
         
-        goingForwards = false // back to false because we are returning to the view controller and dismissing the imagePicker(Photo Library)
         self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
     
@@ -193,6 +184,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == TableSection.fields.rawValue {
+            print("Section 1")
             let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell") as! TableViewFieldCell
             cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
             cell.fieldLabel.text = fieldsArray[indexPath.row][1]
@@ -214,21 +206,24 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("did select row")
         if indexPath.section == TableSection.fields.rawValue {
             if indexPath.row == FieldRow.note.rawValue {
+                print("Note Field")
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
                 present(noteVC, animated: true, completion: nil)
             }
             
             if indexPath.row == FieldRow.importImage.rawValue {
+                print("Import Image Field")
                 importImageCellPressed()
             }
         }
-        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == TableSection.fields.rawValue {
+            print("HeightForRowAt Section 1")
             if indexPath.row == FieldRow.note.rawValue {
                 return 75
             } else {
@@ -247,40 +242,40 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     // deletes image
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let delete = deleteAction(at: indexPath)
-        
-        return UISwipeActionsConfiguration(actions: [delete])
-    }
-    
-    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
-        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
-            /* Remove the item from the data model (Local Array & posibly RealmDB) */
-            // We remove the image from the array this way because the images are displayed reversed on the tableView
-            let count = self.imageStringNames.count
-            let index = (count - 1) - indexPath.section
-            let imageString = self.imageStringNames.remove(at: index)
-            // Removes if it's a newImage that gets deleted before tapping save to make sure it doesn't save it to realm
-            self.newImportedImages.removeAll(where: { $0 == imageString })
-            
-            if self.getItem.imageNames.contains(imageString) {
-                // remove from RealmDB
-                try! self.realm?.write {
-                    self.getItem.imageNames.remove(at: index)
-                }
-            }
-            // remove from FileService
-            try? FileService.delete(filename: imageString)
-            
-            // delete the tableView section
-            let indexSet = IndexSet(arrayLiteral: indexPath.section)
-            self.tableView.deleteSections(indexSet, with: .fade)
-            
-            completion(true)
-        }
-        action.image = UIImage(named: "trash")
-        action.backgroundColor = .red
-        
-        return action
-    }
+//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let delete = deleteAction(at: indexPath)
+//
+//        return UISwipeActionsConfiguration(actions: [delete])
+//    }
+//
+//    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
+//        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+//            /* Remove the item from the data model (Local Array & posibly RealmDB) */
+//            // We remove the image from the array this way because the images are displayed reversed on the tableView
+//            let count = self.imageStringNames.count
+//            let index = (count - 1) - indexPath.section
+//            let imageString = self.imageStringNames.remove(at: index)
+//            // Removes if it's a newImage that gets deleted before tapping save to make sure it doesn't save it to realm
+//            self.newImportedImages.removeAll(where: { $0 == imageString })
+//
+//            if self.getItem.imageNames.contains(imageString) {
+//                // remove from RealmDB
+//                try! self.realm?.write {
+//                    self.getItem.imageNames.remove(at: index)
+//                }
+//            }
+//            // remove from FileService
+//            try? FileService.delete(filename: imageString)
+//
+//            // delete the tableView section
+//            let indexSet = IndexSet(arrayLiteral: indexPath.section)
+//            self.tableView.deleteSections(indexSet, with: .fade)
+//
+//            completion(true)
+//        }
+//        action.image = UIImage(named: "trash")
+//        action.backgroundColor = .red
+//
+//        return action
+//    }
 }

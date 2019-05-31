@@ -440,8 +440,8 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
-                                    <outlet property="dataSource" destination="NZ2-68-Bzq" id="5rb-mM-m3y"/>
-                                    <outlet property="delegate" destination="NZ2-68-Bzq" id="jBv-Pg-c5t"/>
+                                    <outlet property="dataSource" destination="NZ2-68-Bzq" id="BB0-4O-58q"/>
+                                    <outlet property="delegate" destination="NZ2-68-Bzq" id="vd2-9l-BXE"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -474,7 +474,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nRj-dy-fET">
                                 <rect key="frame" x="8" y="28" width="359" height="619"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <inset key="separatorInset" minX="47" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="fieldCell" id="MZE-XB-9mN" customClass="FieldCell" customModule="To_Do_List" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="359" height="44"/>
@@ -576,11 +575,7 @@
                         <viewLayoutGuide key="safeArea" id="nnQ-56-8ec"/>
                     </view>
                     <navigationItem key="navigationItem" title="Add" id="WSy-0s-Boz">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="gBn-Ns-xvr">
-                            <connections>
-                                <action selector="doneButtonPressed:" destination="awK-sH-VHD" id="nmS-J5-REC"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="gBn-Ns-xvr"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="nRj-dy-fET" id="9HH-wp-bAz"/>
