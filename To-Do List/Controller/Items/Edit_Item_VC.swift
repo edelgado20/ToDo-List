@@ -69,7 +69,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             }
             newImportedImages.removeAll()
         }
-        
     }
     
     // hides keyboard when pressed on return key
@@ -242,40 +241,40 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     // deletes image
-//    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-//        let delete = deleteAction(at: indexPath)
-//
-//        return UISwipeActionsConfiguration(actions: [delete])
-//    }
-//
-//    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
-//        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
-//            /* Remove the item from the data model (Local Array & posibly RealmDB) */
-//            // We remove the image from the array this way because the images are displayed reversed on the tableView
-//            let count = self.imageStringNames.count
-//            let index = (count - 1) - indexPath.section
-//            let imageString = self.imageStringNames.remove(at: index)
-//            // Removes if it's a newImage that gets deleted before tapping save to make sure it doesn't save it to realm
-//            self.newImportedImages.removeAll(where: { $0 == imageString })
-//
-//            if self.getItem.imageNames.contains(imageString) {
-//                // remove from RealmDB
-//                try! self.realm?.write {
-//                    self.getItem.imageNames.remove(at: index)
-//                }
-//            }
-//            // remove from FileService
-//            try? FileService.delete(filename: imageString)
-//
-//            // delete the tableView section
-//            let indexSet = IndexSet(arrayLiteral: indexPath.section)
-//            self.tableView.deleteSections(indexSet, with: .fade)
-//
-//            completion(true)
-//        }
-//        action.image = UIImage(named: "trash")
-//        action.backgroundColor = .red
-//
-//        return action
-//    }
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let delete = deleteAction(at: indexPath)
+
+        return UISwipeActionsConfiguration(actions: [delete])
+    }
+
+    func deleteAction(at indexPath: IndexPath) -> UIContextualAction {
+        let action = UIContextualAction(style: .normal, title: nil) { (action, view, completion) in
+            /* Remove the item from the data model (Local Array & posibly RealmDB) */
+            // We remove the image from the array this way because the images are displayed reversed on the tableView
+            let count = self.importedImages.count
+            let index = (count - 1) - indexPath.row
+            let imageString = self.importedImages.remove(at: index)
+            // Removes the image if it's a newImage that gets deleted before saving it to realm (write transaction on viewWillDisappear)
+            self.newImportedImages.removeAll(where: { $0 == imageString })
+
+            if self.getItem.imageNames.contains(imageString) {
+                // remove from RealmDB
+                try! self.realm?.write {
+                    self.getItem.imageNames.remove(at: index)
+                }
+            }
+            // remove from FileService
+            try? FileService.delete(filename: imageString)
+            
+            // delete the tableView row
+            let indexPath = IndexPath(row: indexPath.row, section: indexPath.section)
+            self.tableView.deleteRows(at: [indexPath], with: .fade)
+
+            completion(true)
+        }
+        action.image = UIImage(named: "trash")
+        action.backgroundColor = .red
+
+        return action
+    }
 }
