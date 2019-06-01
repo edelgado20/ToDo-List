@@ -394,6 +394,11 @@
                                                 <constraint firstItem="kcS-oW-g7l" firstAttribute="top" secondItem="GDB-77-8la" secondAttribute="top" constant="11" id="wZs-6X-Oih"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="4"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <outlet property="fieldLabel" destination="kcS-oW-g7l" id="vfT-7u-3L9"/>
                                             <outlet property="iconPlaceholder" destination="vCA-hg-PAn" id="UTf-Rv-ehg"/>

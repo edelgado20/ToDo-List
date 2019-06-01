@@ -17,8 +17,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     let cellHeaderSpacingHeight: CGFloat = 8
     var getItem = Item()
-    var imageStringNames: [String] = []
-    var newImportedImages = [String]()
+    var importedImages: [String] = [] // array containing all importedImages for tableview data
+    var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
     var imagePickerController: UIImagePickerController?
     let fieldsArray = [
         ["calendar", "Due Date"],
@@ -43,10 +43,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         super.viewDidLoad()
         
         realm = try! Realm()
-        
- 
+    
         //Get all images from the Item realm object
-        imageStringNames.append(contentsOf: getItem.imageNames)
+        importedImages.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
         
         // Hides the keyboard when user taps anywhere else other than the keyboard
@@ -58,11 +57,19 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        /* Realm Writes are expensive so instead of doing a write transaction everytime we add an image we instead check before the view will disappear and check if there is any new images in the newImportedImages array */
+        if newImportedImages.count > 0 {
+            try! self.realm?.write {
+                //            getItem.descrip = editDescription.text
+                getItem.imageNames.append(objectsIn: newImportedImages)
+            }
+            newImportedImages.removeAll()
+        }
+        
     }
     
     // hides keyboard when pressed on return key
@@ -72,10 +79,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @IBAction func saveEditItem(_ sender: Any) {
-        try! self.realm?.write {
-//            getItem.descrip = editDescription.text
-            getItem.imageNames.append(objectsIn: newImportedImages)
-        }
         
         navigationController?.popViewController(animated: true)
     }
@@ -145,9 +148,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // 1) Resize the image 2) Write the image to Disk(FileService)
         let resizeImage = image.image(scaledToFitIn: CGSize(width: 1000, height: 1000))
         guard let urlString = try? FileService.write(image: resizeImage) else { return }
-        
-        imageStringNames.append(urlString) // array that displays data on the collection view
-        newImportedImages.append(urlString) // used to manage new images to posibly add them to realm or delete them from disk
+        newImportedImages.append(urlString)
+        importedImages.append(urlString)
+  
         tableView.reloadData()
         
         self.imagePickerController?.dismiss(animated: true, completion: nil)
@@ -178,13 +181,12 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
         if section == TableSection.fields.rawValue {
             return fieldsArray.count
         } else {
-            return imageStringNames.count
+            return importedImages.count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == TableSection.fields.rawValue {
-            print("Section 1")
             let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell") as! TableViewFieldCell
             cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
             cell.fieldLabel.text = fieldsArray[indexPath.row][1]
@@ -196,9 +198,8 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             
             return cell
         } else {
-            print("Section 2")
             let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! TableViewImageCell
-            let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row])
+            let image = try? FileService.readImage(from: importedImages.reversed()[indexPath.row])
             cell.imgView.image = image
             
             return cell
@@ -223,7 +224,6 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == TableSection.fields.rawValue {
-            print("HeightForRowAt Section 1")
             if indexPath.row == FieldRow.note.rawValue {
                 return 75
             } else {
@@ -231,7 +231,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             }
         } else { // Images Section
             // Get the image ratio to calculate the cell height dynamically
-            if let image = try? FileService.readImage(from: imageStringNames.reversed()[indexPath.row]) {
+            if let image = try? FileService.readImage(from: importedImages.reversed()[indexPath.row]) {
                 let imageRatio = image.getImageRatio()
                 /* Calculation: Get the tableView width minus the leading and trailing constraints divided by the imageRatio. Then add the top and bottom constraints */
                 return ((tableView.frame.width-56) / imageRatio) + 8
