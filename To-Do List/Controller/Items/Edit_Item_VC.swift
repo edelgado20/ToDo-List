@@ -75,7 +75,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             .init(icon: #imageLiteral(resourceName: "calendar"), title: "Due Date"),
             .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder"),
             .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip),
-            .init(icon: #imageLiteral(resourceName: "paperClip"), title: "Import an image")
+            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image")
         ]
     }
     
