@@ -11,7 +11,6 @@ import RealmSwift
 import MobileCoreServices
 
 class ItemsVC: UIViewController {
-
     @IBOutlet weak var TABLEVIEW: UITableView!
     @IBOutlet weak var doneButton: UIBarButtonItem!
     @IBOutlet weak var addItemTextField: UITextField!

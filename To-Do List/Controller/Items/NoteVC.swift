@@ -7,30 +7,55 @@
 //
 
 import UIKit
+import RealmSwift
 
 class NoteVC: UIViewController {
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var noteTextView: UITextView!
     
+    var realm: Realm?
+    var note: String = ""
+    var subtitle: String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        realm = try! Realm()
         
-        self.navBar.topItem?.titleView = setTitle(title: "Notes", subtitle: "Subtitle")
-        self.noteTextView.becomeFirstResponder() // make keyboard appear
+        // Setup
+        noteTextView.text = note
+        self.navBar.topItem?.titleView = setNavBarTitle(title: "Notes", subtitle: subtitle)
+        if noteTextView.text.isEmpty {
+            self.noteTextView.becomeFirstResponder() // make keyboard appear
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        
         //self.setNeedsStatusBarAppearanceUpdate()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        noteTextView.resignFirstResponder() // hide keyboard
     }
 
 //    override var preferredStatusBarStyle: UIStatusBarStyle {
 //        return .default
 //    }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let vc = segue.destination as! Edit_Item_VC
+        try? realm?.write {
+            vc.getItem.descrip = noteTextView.text
+        }
+    }
+    
+    @IBAction func dismissModalViewController(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     // https://stackoverflow.com/questions/38626004/add-subtitle-under-the-title-in-navigation-bar-controller-in-xcode
-    func setTitle(title: String, subtitle: String) -> UIView {
+    func setNavBarTitle(title: String, subtitle: String) -> UIView {
         let titleLabel = UILabel(frame: CGRect(x: 0, y: -2, width: 0, height: 0))
         titleLabel.backgroundColor = UIColor.clear
         titleLabel.textColor = UIColor.black
@@ -61,10 +86,4 @@ class NoteVC: UIViewController {
         
         return titleView
     }
-
-    @IBAction func dismissModalViewController(_ sender: Any) {
-        self.noteTextView.resignFirstResponder() // hide keyboard
-        dismiss(animated: true, completion: nil)
-    }
-    
 }

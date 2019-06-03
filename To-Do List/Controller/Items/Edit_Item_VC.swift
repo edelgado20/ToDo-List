@@ -11,6 +11,7 @@ import RealmSwift
 import AVFoundation
 
 class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
     var realm: Realm? = nil
     
     @IBOutlet weak var tableView: UITableView!
@@ -20,12 +21,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
     var imagePickerController: UIImagePickerController?
-    let fieldsArray = [
-        ["calendar", "Due Date"],
-        ["bell", "Reminder"],
-        ["pen", "Add a note..."],
-        ["paperclipIcon", "Import an image"]
-    ]
+    var viewModels: [EditItemVC_FieldCell.ViewModel] = []
     
     enum TableSection: Int {
         case fields = 0
@@ -43,7 +39,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         super.viewDidLoad()
         
         realm = try! Realm()
-    
+        
         //Get all images from the Item realm object
         importedImages.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
@@ -57,6 +53,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        setViewModels(from: getItem)
+        tableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -71,15 +70,19 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
     }
     
+    private func setViewModels(from item: Item) {
+        viewModels = [
+            .init(icon: #imageLiteral(resourceName: "calendar"), title: "Due Date"),
+            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder"),
+            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip),
+            .init(icon: #imageLiteral(resourceName: "paperClip"), title: "Import an image")
+        ]
+    }
+    
     // hides keyboard when pressed on return key
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
-    }
-    
-    @IBAction func saveEditItem(_ sender: Any) {
-        
-        navigationController?.popViewController(animated: true)
     }
     
     // MARK: Handling Image Picker
@@ -158,15 +161,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
-}
-
-class TableViewImageCell: UITableViewCell {
-    @IBOutlet weak var imgView: UIImageView!
-}
-
-class TableViewFieldCell: UITableViewCell {
-    @IBOutlet weak var iconPlaceholder: UIImageView!
-    @IBOutlet weak var fieldLabel: UILabel!
+    
+    @IBAction func unwind(segue: UIStoryboardSegue) {
+        print("unwind")
+    }
 }
 
 extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
@@ -178,7 +176,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     // There is just one row in every section
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == TableSection.fields.rawValue {
-            return fieldsArray.count
+            return viewModels.count
         } else {
             return importedImages.count
         }
@@ -186,9 +184,8 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == TableSection.fields.rawValue {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell") as! TableViewFieldCell
-            cell.iconPlaceholder.image = UIImage(named: fieldsArray[indexPath.row][0])
-            cell.fieldLabel.text = fieldsArray[indexPath.row][1]
+            let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell", for: indexPath)
+            (cell as? EditItemVC_FieldCell)?.configure(with: viewModels[indexPath.row]) // setup cell
             
             // Create a background view to change the cell color when selected
             let backgroundView = UIView()
@@ -197,7 +194,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell") as! TableViewImageCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "imageCell", for: indexPath) as! EditItemVC_ImageCell
             let image = try? FileService.readImage(from: importedImages.reversed()[indexPath.row])
             cell.imgView.image = image
             
@@ -206,11 +203,11 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("did select row")
         if indexPath.section == TableSection.fields.rawValue {
             if indexPath.row == FieldRow.note.rawValue {
-                print("Note Field")
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
+                noteVC.note = getItem.descrip
+                noteVC.subtitle = getItem.name
                 present(noteVC, animated: true, completion: nil)
             }
             
@@ -223,11 +220,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == TableSection.fields.rawValue {
-            if indexPath.row == FieldRow.note.rawValue {
-                return 75
-            } else {
-                return 45
-            }
+            return UITableView.automaticDimension // for stack view
         } else { // Images Section
             // Get the image ratio to calculate the cell height dynamically
             if let image = try? FileService.readImage(from: importedImages.reversed()[indexPath.row]) {
