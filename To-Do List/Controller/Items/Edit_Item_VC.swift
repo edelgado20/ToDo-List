@@ -233,10 +233,18 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
         }
     }
     
+    // Only enables the Images TableView Section to be edited/deleted
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if indexPath.section == TableSection.images.rawValue {
+            return true
+        }
+        return false
+    }
+    
     // deletes image
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let delete = deleteAction(at: indexPath)
-
+        
         return UISwipeActionsConfiguration(actions: [delete])
     }
 
