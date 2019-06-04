@@ -152,9 +152,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         guard let urlString = try? FileService.write(image: resizeImage) else { return }
         newImportedImages.append(urlString)
         importedImages.append(urlString)
-  
-        tableView.reloadData()
         
+        tableView.reloadData()
+
         self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
     
@@ -162,9 +162,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func unwind(segue: UIStoryboardSegue) {
-        print("unwind")
-    }
+    @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
 }
 
 extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
@@ -212,8 +210,8 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             }
             
             if indexPath.row == FieldRow.importImage.rawValue {
-                print("Import Image Field")
                 importImageCellPressed()
+                tableView.deselectRow(at: indexPath, animated: true)
             }
         }
     }
