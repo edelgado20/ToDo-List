@@ -398,6 +398,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="IlO-Bg-bGg" secondAttribute="bottom" constant="11" id="zNh-7G-G0t"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" red="0.95686274509803915" green="0.95294117647058818" blue="0.94509803921568625" alpha="1" colorSpace="calibratedRGB"/>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                                 <integer key="value" value="4"/>
@@ -454,7 +455,7 @@
                                 </connections>
                             </tableView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.95686274509803915" green="0.95294117647058818" blue="0.94509803921568625" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="33c-HQ-Ahz" firstAttribute="leading" secondItem="FnN-ZH-riP" secondAttribute="leading" constant="8" id="0vB-as-Dse"/>
                             <constraint firstItem="33c-HQ-Ahz" firstAttribute="top" secondItem="FnN-ZH-riP" secondAttribute="top" constant="8" id="8vk-n4-SeF"/>
