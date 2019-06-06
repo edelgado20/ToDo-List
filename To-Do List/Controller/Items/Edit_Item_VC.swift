@@ -17,11 +17,12 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBOutlet weak var tableView: UITableView!
     
     let cellHeaderSpacingHeight: CGFloat = 8
-    var datePicker = UIDatePicker()
     var getItem = Item()
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
     var imagePickerController: UIImagePickerController?
+    var datePicker = UIDatePicker()
+    var toolBar = UIToolbar()
     var viewModels: [EditItemVC_FieldCell.ViewModel] = []
     
     enum TableSection: Int {
@@ -64,7 +65,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         /* Realm Writes are expensive so instead of doing a write transaction everytime we add an image we instead check before the view will disappear and check if there is any new images in the newImportedImages array */
         if newImportedImages.count > 0 {
             try! self.realm?.write {
-                //            getItem.descrip = editDescription.text
                 getItem.imageNames.append(objectsIn: newImportedImages)
             }
             newImportedImages.removeAll()
@@ -167,15 +167,17 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // DatePicker
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
+        self.view.addSubview(datePicker)
         
         // ToolBar
-        let toolbar = UIToolbar()
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 246, width: self.view.frame.width, height: 50))
         toolbar.sizeToFit()
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneDatePicker))
-        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelDatePicker))
-        toolbar.setItems([cancelButton, doneButton], animated: true)
-        
-        view.addSubview(datePicker)
+        let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(cancelDatePicker))
+        removeButton.tintColor = UIColor.black
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneDatePicker))
+        toolbar.setItems([removeButton, spaceButton, doneButton], animated: true)
+        self.view.addSubview(toolbar)
     }
     
     @objc func cancelDatePicker() {
