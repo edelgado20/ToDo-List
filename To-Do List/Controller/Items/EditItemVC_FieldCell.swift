@@ -22,5 +22,8 @@ class EditItemVC_FieldCell: UITableViewCell {
         fieldLabel.text = viewModel.title
     }
     
+    func configureWithoutRealm(textLabel: String) {
+        fieldLabel.text = textLabel
+    }
     
 }

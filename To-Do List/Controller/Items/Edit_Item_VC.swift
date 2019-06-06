@@ -167,21 +167,30 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // DatePicker
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
+        datePicker.minimumDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())
+        if getItem.dueDate.isEmpty {
+            let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+            let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
+            //cell.fieldLabel.text =
+            //tableView.reloadRows(at: [indexPath], with: .fade)
+        }
         self.view.addSubview(datePicker)
         
         // ToolBar
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 246, width: self.view.frame.width, height: 50))
-        toolbar.sizeToFit()
+        toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 246, width: self.view.frame.width, height: 50))
+        toolBar.sizeToFit()
         let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(cancelDatePicker))
         removeButton.tintColor = UIColor.black
         let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneDatePicker))
-        toolbar.setItems([removeButton, spaceButton, doneButton], animated: true)
-        self.view.addSubview(toolbar)
+        toolBar.setItems([removeButton, spaceButton, doneButton], animated: true)
+        self.view.addSubview(toolBar)
     }
     
     @objc func cancelDatePicker() {
         print("CancelDatePicker")
+        toolBar.removeFromSuperview()
+        datePicker.removeFromSuperview()
     }
     
     @objc func doneDatePicker() {
@@ -232,7 +241,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             // Row
             switch indexPath.row {
             case FieldRow.dueDate.rawValue:
-                print("DueDate: \(7)")
+                print("DueDate")
                 showDatePicker()
             case FieldRow.note.rawValue:
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
