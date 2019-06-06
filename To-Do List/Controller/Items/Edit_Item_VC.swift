@@ -17,6 +17,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBOutlet weak var tableView: UITableView!
     
     let cellHeaderSpacingHeight: CGFloat = 8
+    var datePicker = UIDatePicker()
     var getItem = Item()
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
@@ -72,7 +73,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     private func setViewModels(from item: Item) {
         viewModels = [
-            .init(icon: #imageLiteral(resourceName: "calendar"), title: "Due Date"),
+            .init(icon: #imageLiteral(resourceName: "calendar"), title: item.dueDate.isEmpty ? "Due Date" : item.dueDate),
             .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder"),
             .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip),
             .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image")
@@ -162,6 +163,29 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
     
+    func showDatePicker() {
+        // DatePicker
+        datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
+        datePicker.datePickerMode = .date
+        
+        // ToolBar
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneDatePicker))
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelDatePicker))
+        toolbar.setItems([cancelButton, doneButton], animated: true)
+        
+        view.addSubview(datePicker)
+    }
+    
+    @objc func cancelDatePicker() {
+        print("CancelDatePicker")
+    }
+    
+    @objc func doneDatePicker() {
+        print("DoneDatePicker")
+    }
+    
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
 }
 
@@ -201,17 +225,23 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // Section
         if indexPath.section == TableSection.fields.rawValue {
-            if indexPath.row == FieldRow.note.rawValue {
+            // Row
+            switch indexPath.row {
+            case FieldRow.dueDate.rawValue:
+                print("DueDate: \(7)")
+                showDatePicker()
+            case FieldRow.note.rawValue:
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
                 noteVC.note = getItem.descrip
                 noteVC.subtitle = getItem.name
                 present(noteVC, animated: true, completion: nil)
-            }
-            
-            if indexPath.row == FieldRow.importImage.rawValue {
+            case FieldRow.importImage.rawValue:
                 importImageCellPressed()
                 tableView.deselectRow(at: indexPath, animated: true)
+            default:
+                print("None of the above")
             }
         }
     }
