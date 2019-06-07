@@ -21,9 +21,4 @@ class EditItemVC_FieldCell: UITableViewCell {
         iconPlaceholder.image = viewModel.icon
         fieldLabel.text = viewModel.title
     }
-    
-    func configureWithoutRealm(textLabel: String) {
-        fieldLabel.text = textLabel
-    }
-    
 }

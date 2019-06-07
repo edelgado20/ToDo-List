@@ -17,6 +17,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @IBOutlet weak var tableView: UITableView!
     
     let cellHeaderSpacingHeight: CGFloat = 8
+    let dateFormat = "MM-dd-yyyy"
+    var currentYear = 0
+    var currentDate = ""
     var getItem = Item()
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
@@ -42,7 +45,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         realm = try! Realm()
         
-        //Get all images from the Item realm object
+        // Get all images from the Item realm object
         importedImages.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
         
@@ -51,6 +54,17 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
 //        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
+        
+        // SetUp Current Date
+        let date = Date()
+        let components = Calendar.current.dateComponents([.month, .day, .year], from: date)
+        if let month = components.month, let day = components.day, let year = components.year {
+            currentDate = "\(month)-\(day)-\(year)"
+            currentYear = year
+        }
+       
+        print("Current Year: \(currentYear)")
+        print("Current Date: \(currentDate)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -167,12 +181,23 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // DatePicker
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
-        datePicker.minimumDate = Calendar.current.date(byAdding: .year, value: -1, to: Date())
+        datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+
         if getItem.dueDate.isEmpty {
             let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
             let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-            //cell.fieldLabel.text =
-            //tableView.reloadRows(at: [indexPath], with: .fade)
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = dateFormat
+            let date = formatter.string(from: datePicker.date)
+            print("date = \(date)")
+            if date == currentDate {
+                cell.fieldLabel.text = "Due Today"
+            } else {
+                cell.fieldLabel.text = "Due " + date
+            }
+            
+            print("Date: \(datePicker.date)")
         }
         self.view.addSubview(datePicker)
         
@@ -187,6 +212,83 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.view.addSubview(toolBar)
     }
     
+    @objc func dateChanged(_ sender: UIDatePicker) {
+        print("Date Changed")
+        let components = Calendar.current.dateComponents([.month, .day, .year, .weekday], from: sender.date)
+        if let month = components.month, let day = components.day, let year = components.year, let weekday = components.weekday {
+            print("Due \(month)-\(day)-\(year)")
+            print(dueDateFormatter(month: month, day: day, year: year, weekday: weekday))
+            
+            let date = "\(month)-\(day)-\(year)"
+            let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+            let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
+            cell.fieldLabel.text = date
+        }
+    }
+    
+    func dueDateFormatter(month: Int, day: Int, year: Int, weekday: Int) -> String {
+        let date = "\(month)-\(day)-\(year)"
+        let dayOfWeek = convertToWeekday(weekday: weekday)
+        print(dayOfWeek)
+        let monthString = convertToMonth(month: month)
+        print(monthString)
+        
+        if date == currentDate {
+            return "Due Today"
+        }
+        
+        
+        return ""
+    }
+    
+    func convertToWeekday(weekday: Int) -> String {
+        switch weekday {
+        case 1:
+            return "Sun"
+        case 2:
+            return "Mon"
+        case 3:
+            return "Tue"
+        case 4:
+            return "Wed"
+        case 5:
+            return "Thu"
+        case 6:
+            return "Fri"
+        default:
+            return "Sat"
+        }
+    }
+    
+    func convertToMonth(month: Int) -> String {
+        switch month {
+        case 1:
+            return "January"
+        case 2:
+            return "February"
+        case 3:
+            return "March"
+        case 4:
+            return "April"
+        case 5:
+            return "May"
+        case 6:
+            return "June"
+        case 7:
+            return "July"
+        case 8:
+            return "August"
+        case 9:
+            return "September"
+        case 10:
+            return "October"
+        case 11:
+            return "November"
+        default:
+            return "December"
+        }
+    }
+    
     @objc func cancelDatePicker() {
         print("CancelDatePicker")
         toolBar.removeFromSuperview()
@@ -195,6 +297,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     @objc func doneDatePicker() {
         print("DoneDatePicker")
+        toolBar.removeFromSuperview()
+        datePicker.removeFromSuperview()
     }
     
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
