@@ -221,20 +221,19 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         if let month = components.month, let day = components.day, let year = components.year, let weekday = components.weekday {
             let dueDate = Calendar.current.date(from: components)!
             
-            print(dueDateFormatter(month: month, day: day, year: year, weekday: weekday, dueDate: dueDate))
+            let dueDateFormatted = dueDateFormatter(month: month, day: day, year: year, weekday: weekday, dueDate: dueDate)
             
-            
-            let date = "\(month)-\(day)-\(year)"
+            //let date = "\(month)-\(day)-\(year)"
             let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
             let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-            cell.fieldLabel.text = date
+            cell.fieldLabel.text = dueDateFormatted
         }
     }
     
     func dueDateFormatter(month: Int, day: Int, year: Int, weekday: Int, dueDate: Date) -> String {
-        /* The variable date and dueDate are almost the same value except that date doesn't have zero's on their day or month and dueDate has */
+        /* The variable date and dueDate are almost the same value except that date doesn't have zero's on their day or month and dueDate does */
         let date = "\(month)-\(day)-\(year)"
-        let dayOfWeek = convertToWeekday(weekday: weekday)
+        let dayOfWeek = convertToDayOfWeek(day: weekday)
         let monthString = convertToMonth(month: month)
         
         if date == currentDate {
@@ -245,17 +244,23 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         let formatter = DateFormatter()
         formatter.dateFormat = "MM-dd-yyyy"
         let dueDateTrim = formatter.string(from: dueDate)
-        let tomorrowString = tomorrow()
         
+        let tomorrowString = tomorrow()
         if dueDateTrim == tomorrowString {
-            print("YeS Tomorrow")
-        } else {
-            print("Not Tomorrow")
+            return "Due Tomorrow"
         }
         
-        //let yesterdayString = yesterday()
+        let yesterdayString = yesterday()
+        if dueDateTrim == yesterdayString {
+            return "Due Yesterday"
+        }
         
-        return "HI"
+        if year == currentYear {
+            return "Due \(dayOfWeek), \(monthString) \(day)"
+        } else {
+            return "Due \(dayOfWeek), \(monthString) \(day), \(year)"
+        }
+        
     }
     
     func tomorrow() -> String {
@@ -279,12 +284,13 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         let yesterday = Calendar.current.date(byAdding: dateComponents, to: today)!
         let formatter = DateFormatter()
         formatter.dateFormat = "MM-dd-yyyy"
-        //let yesterdayTrim =
-        return ""
+        let yesterdayTrim = formatter.string(from: yesterday)
+        
+        return yesterdayTrim
     }
     
-    func convertToWeekday(weekday: Int) -> String {
-        switch weekday {
+    func convertToDayOfWeek(day: Int) -> String {
+        switch day {
         case 1:
             return "Sun"
         case 2:
