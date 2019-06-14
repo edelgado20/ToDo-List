@@ -63,8 +63,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             currentYear = year
         }
        
-        print("Current Year: \(currentYear)")
-        print("Current Date: \(currentDate)")
+        print("ViewDidLoad() -> Current Year: \(currentYear)")
+        print("ViewDidLoad() -> Current Date: \(currentDate)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -187,17 +187,19 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
             let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
             
-            let formatter = DateFormatter()
-            formatter.dateFormat = dateFormat
-            let date = formatter.string(from: datePicker.date)
-            print("date = \(date)")
-            if date == currentDate {
+            let calendar = Calendar.current
+            let year = calendar.component(.year, from: datePicker.date)
+            let month = calendar.component(.month, from: datePicker.date)
+            let day = calendar.component(.day, from: datePicker.date)
+            print("showDatePicker() -> DateFromPicker: \(month)-\(day)-\(year)")
+            let dateFromPicker = "\(month)-\(day)-\(year)"
+            
+            if dateFromPicker == currentDate {
                 cell.fieldLabel.text = "Due Today"
             } else {
-                cell.fieldLabel.text = "Due " + date
+                print("showDatePicker() -> else statement from being empty")
+                cell.fieldLabel.text = "Due " + dateFromPicker
             }
-            
-            print("Date: \(datePicker.date)")
         }
         self.view.addSubview(datePicker)
         
@@ -213,11 +215,14 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @objc func dateChanged(_ sender: UIDatePicker) {
-        print("Date Changed")
+        print("DateChanged()")
+        
         let components = Calendar.current.dateComponents([.month, .day, .year, .weekday], from: sender.date)
         if let month = components.month, let day = components.day, let year = components.year, let weekday = components.weekday {
-            print("Due \(month)-\(day)-\(year)")
-            print(dueDateFormatter(month: month, day: day, year: year, weekday: weekday))
+            let dueDate = Calendar.current.date(from: components)!
+            
+            print(dueDateFormatter(month: month, day: day, year: year, weekday: weekday, dueDate: dueDate))
+            
             
             let date = "\(month)-\(day)-\(year)"
             let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
@@ -226,18 +231,55 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
     }
     
-    func dueDateFormatter(month: Int, day: Int, year: Int, weekday: Int) -> String {
+    func dueDateFormatter(month: Int, day: Int, year: Int, weekday: Int, dueDate: Date) -> String {
+        /* The variable date and dueDate are almost the same value except that date doesn't have zero's on their day or month and dueDate has */
         let date = "\(month)-\(day)-\(year)"
         let dayOfWeek = convertToWeekday(weekday: weekday)
-        print(dayOfWeek)
         let monthString = convertToMonth(month: month)
-        print(monthString)
         
         if date == currentDate {
             return "Due Today"
         }
+    
+        /* Formating the dueDate to MM-dd-yyyy format to check if the dueDate is a yesterday or tomorrow */
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-yyyy"
+        let dueDateTrim = formatter.string(from: dueDate)
+        let tomorrowString = tomorrow()
         
+        if dueDateTrim == tomorrowString {
+            print("YeS Tomorrow")
+        } else {
+            print("Not Tomorrow")
+        }
         
+        //let yesterdayString = yesterday()
+        
+        return "HI"
+    }
+    
+    func tomorrow() -> String {
+        var dateComponents = DateComponents()
+        dateComponents.setValue(1, for: .day) // +1 day
+        
+        let today = Date()
+        let tomorrow = Calendar.current.date(byAdding: dateComponents, to: today)!
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-yyyy"
+        let tomorrowTrim = formatter.string(from: tomorrow)
+        
+        return tomorrowTrim
+    }
+    
+    func yesterday() -> String {
+        var dateComponents = DateComponents()
+        dateComponents.setValue(-1, for: .day) // -1 day
+        
+        let today = Date()
+        let yesterday = Calendar.current.date(byAdding: dateComponents, to: today)!
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM-dd-yyyy"
+        //let yesterdayTrim =
         return ""
     }
     
@@ -345,7 +387,6 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             // Row
             switch indexPath.row {
             case FieldRow.dueDate.rawValue:
-                print("DueDate")
                 showDatePicker()
             case FieldRow.note.rawValue:
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
