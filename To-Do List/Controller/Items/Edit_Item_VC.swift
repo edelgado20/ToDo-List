@@ -20,6 +20,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     let dateFormat = "MM-dd-yyyy"
     var currentYear = 0
     var currentDate = ""
+    var dueDate = ""
     var getItem = Item()
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
@@ -182,24 +183,14 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
-
+        
+        // Create a new cell to replace the current one and add the dueDate text on the label
+        let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         if getItem.dueDate.isEmpty {
-            let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
-            let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-            
-            let calendar = Calendar.current
-            let year = calendar.component(.year, from: datePicker.date)
-            let month = calendar.component(.month, from: datePicker.date)
-            let day = calendar.component(.day, from: datePicker.date)
-            print("showDatePicker() -> DateFromPicker: \(month)-\(day)-\(year)")
-            let dateFromPicker = "\(month)-\(day)-\(year)"
-            
-            if dateFromPicker == currentDate {
-                cell.fieldLabel.text = "Due Today"
-            } else {
-                print("showDatePicker() -> else statement from being empty")
-                cell.fieldLabel.text = "Due " + dateFromPicker
-            }
+            cell.fieldLabel.text = "Due Today"
+        } else {
+            cell.fieldLabel.text = getItem.dueDate
         }
         self.view.addSubview(datePicker)
         
@@ -227,6 +218,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
             let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
             cell.fieldLabel.text = dueDateFormatted
+            self.dueDate = dueDateFormatted //global variable that get's assigned to realm object
         }
     }
     
@@ -345,6 +337,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     @objc func doneDatePicker() {
         print("DoneDatePicker")
+        try! realm?.write {
+            getItem.dueDate = dueDate
+        }
+        
         toolBar.removeFromSuperview()
         datePicker.removeFromSuperview()
     }
