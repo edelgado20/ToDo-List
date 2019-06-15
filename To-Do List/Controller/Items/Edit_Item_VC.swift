@@ -88,8 +88,14 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     private func setViewModels(from item: Item) {
-        let dueDateFormatted: String = dueDateFormatter(dueDate: item.dueDate)
-        
+        // Unwrapping Optional 
+        var dueDateFormatted: String = ""
+        if let dueDate = getItem.dueDate {
+            dueDateFormatted = dueDateFormatter(dueDate: dueDate)
+        } else {
+            dueDateFormatted = "Due Date"
+        }
+
         viewModels = [
             .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted),
             .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder"),
@@ -185,14 +191,21 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // DatePicker
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
-        datePicker.setDate(getItem.dueDate, animated: true)
+        datePicker.setDate(getItem.dueDate ?? Date(), animated: true)
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         
         // Create a new cell to replace the current one and add the dueDate text on the label
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-
-        cell.fieldLabel.text = dueDateFormatter(dueDate: getItem.dueDate)
+        
+        // Unwrapping Optional
+        var dueDateString: String = ""
+        if let date = getItem.dueDate {
+            dueDateString = dueDateFormatter(dueDate: date)
+        } else {
+            dueDateString = "Due Date"
+        }
+        cell.fieldLabel.text = dueDateString
         cell.fieldLabel.highlightedTextColor = UIColor.init(hexString: "0066FF")
      
         self.view.addSubview(datePicker)
