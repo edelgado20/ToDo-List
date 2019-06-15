@@ -88,7 +88,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     private func setViewModels(from item: Item) {
-        // Unwrapping Optional 
+        // Unwrapping Optional
         var dueDateFormatted: String = ""
         if let dueDate = getItem.dueDate {
             dueDateFormatted = dueDateFormatter(dueDate: dueDate)
@@ -350,13 +350,21 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @objc func cancelDatePicker() {
-        print("CancelDatePicker")
+        // Set to nil if there is a due date value on the object
+        if (getItem.dueDate != nil)  {
+            try! realm?.write {
+                getItem.dueDate = nil
+            }
+        }
+    
         toolBar.removeFromSuperview()
         datePicker.removeFromSuperview()
+        
+        let indexPosition = IndexPath(row: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        tableView.reloadRows(at: [indexPosition], with: .fade)
     }
     
     @objc func doneDatePicker() {
-        print("DoneDatePicker")
         try! realm?.write {
             getItem.dueDate = globalDueDate ?? Date()
         }
