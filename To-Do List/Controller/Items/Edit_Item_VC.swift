@@ -56,7 +56,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
         
+        /* GlobalDueDate is used to keep a hold of its value and save it to realm if it has a value on viewWillDissappear */
         globalDueDate = getItem.dueDate
+        
         // SetUp Current Date
         let date = Date()
         let components = Calendar.current.dateComponents([.month, .day, .year], from: date)
@@ -84,6 +86,13 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
                 getItem.imageNames.append(objectsIn: newImportedImages)
             }
             newImportedImages.removeAll()
+        }
+        
+        // Checking to see if the GlobalDueDate has a value and its value is not the same as the one on realm 
+        if globalDueDate != nil && getItem.dueDate != globalDueDate {
+            try! self.realm?.write {
+                getItem.dueDate = globalDueDate
+            }
         }
     }
     
@@ -356,6 +365,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
                 getItem.dueDate = nil
             }
         }
+        globalDueDate = nil
     
         toolBar.removeFromSuperview()
         datePicker.removeFromSuperview()
@@ -365,8 +375,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @objc func doneDatePicker() {
-        try! realm?.write {
-            getItem.dueDate = globalDueDate ?? Date()
+        if globalDueDate != nil {
+            try! realm?.write {
+                getItem.dueDate = globalDueDate
+            }
         }
         
         toolBar.removeFromSuperview()
