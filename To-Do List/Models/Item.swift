@@ -15,7 +15,7 @@ class Item: Object {
     @objc dynamic var descrip: String = ""
     @objc dynamic var category: Category?
     @objc dynamic var completed: Bool = false
-    @objc dynamic var dueDate: String = ""
+    @objc dynamic var dueDate: Date = Date()
     
     // index is used to sort the objects by its index to support drag and drop of tableview cells
     @objc dynamic var index: Int = .max

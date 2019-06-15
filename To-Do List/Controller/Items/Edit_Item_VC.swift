@@ -20,7 +20,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     let dateFormat = "MM-dd-yyyy"
     var currentYear = 0
     var currentDate = ""
-    var dueDate = ""
+    var globalDueDate: Date?
     var getItem = Item()
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
@@ -56,6 +56,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
         
+        globalDueDate = getItem.dueDate
         // SetUp Current Date
         let date = Date()
         let components = Calendar.current.dateComponents([.month, .day, .year], from: date)
@@ -87,8 +88,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     private func setViewModels(from item: Item) {
+        let dueDateFormatted: String = dueDateFormatter(dueDate: item.dueDate)
+        
         viewModels = [
-            .init(icon: #imageLiteral(resourceName: "calendar"), title: item.dueDate.isEmpty ? "Due Date" : item.dueDate),
+            .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted),
             .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder"),
             .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip),
             .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image")
@@ -182,16 +185,16 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // DatePicker
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
+        datePicker.setDate(getItem.dueDate, animated: true)
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         
         // Create a new cell to replace the current one and add the dueDate text on the label
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-        if getItem.dueDate.isEmpty {
-            cell.fieldLabel.text = "Due Today"
-        } else {
-            cell.fieldLabel.text = getItem.dueDate
-        }
+
+        cell.fieldLabel.text = dueDateFormatter(dueDate: getItem.dueDate)
+        cell.fieldLabel.highlightedTextColor = UIColor.init(hexString: "0066FF")
+     
         self.view.addSubview(datePicker)
         
         // ToolBar
@@ -207,54 +210,58 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     @objc func dateChanged(_ sender: UIDatePicker) {
         print("DateChanged()")
+       
+        let dueDateFormatted = dueDateFormatter(dueDate: sender.date)
+        print("DueDateFormatted: \(dueDateFormatted)")
+
+        self.globalDueDate = sender.date // global variable that get's assigned to realm object
+        // Getting the dueDate cell to update the label with the dueDate
+        let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
+        cell.fieldLabel.text = dueDateFormatted
+    }
+    
+    func dueDateFormatter(dueDate: Date) -> String {
         
-        let components = Calendar.current.dateComponents([.month, .day, .year, .weekday], from: sender.date)
+        let components = Calendar.current.dateComponents([.month, .day, .year, .weekday], from: dueDate)
+
         if let month = components.month, let day = components.day, let year = components.year, let weekday = components.weekday {
+            /* The variable date and dueDate are almost the same value except that date doesn't have zero's on their day or month and dueDate does */
+            let date = "\(month)-\(day)-\(year)"
             let dueDate = Calendar.current.date(from: components)!
+            let dayOfWeek = convertToDayOfWeek(day: weekday)
+            let monthString = convertToMonth(month: month)
             
-            let dueDateFormatted = dueDateFormatter(month: month, day: day, year: year, weekday: weekday, dueDate: dueDate)
+            if date == currentDate {
+                return "Due Today"
+            }
+        
+            /* Formating the dueDate to MM-dd-yyyy format to check if the dueDate is a yesterday or tomorrow */
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MM-dd-yyyy"
+            let dueDateTrim = formatter.string(from: dueDate)
             
-            //let date = "\(month)-\(day)-\(year)"
-            let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
-            let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-            cell.fieldLabel.text = dueDateFormatted
-            self.dueDate = dueDateFormatted //global variable that get's assigned to realm object
-        }
-    }
-    
-    func dueDateFormatter(month: Int, day: Int, year: Int, weekday: Int, dueDate: Date) -> String {
-        /* The variable date and dueDate are almost the same value except that date doesn't have zero's on their day or month and dueDate does */
-        let date = "\(month)-\(day)-\(year)"
-        let dayOfWeek = convertToDayOfWeek(day: weekday)
-        let monthString = convertToMonth(month: month)
-        
-        if date == currentDate {
-            return "Due Today"
-        }
-    
-        /* Formating the dueDate to MM-dd-yyyy format to check if the dueDate is a yesterday or tomorrow */
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM-dd-yyyy"
-        let dueDateTrim = formatter.string(from: dueDate)
-        
-        let tomorrowString = tomorrow()
-        if dueDateTrim == tomorrowString {
-            return "Due Tomorrow"
-        }
-        
-        let yesterdayString = yesterday()
-        if dueDateTrim == yesterdayString {
-            return "Due Yesterday"
-        }
-        
-        if year == currentYear {
-            return "Due \(dayOfWeek), \(monthString) \(day)"
+            let tomorrowString = tomorrow()
+            if dueDateTrim == tomorrowString {
+                return "Due Tomorrow"
+            }
+            
+            let yesterdayString = yesterday()
+            if dueDateTrim == yesterdayString {
+                return "Due Yesterday"
+            }
+            
+            if year == currentYear {
+                return "Due \(dayOfWeek), \(monthString) \(day)"
+            } else {
+                return "Due \(dayOfWeek), \(monthString) \(day), \(year)"
+            }
         } else {
-            return "Due \(dayOfWeek), \(monthString) \(day), \(year)"
+            return "Due Date"
         }
-        
     }
     
+    // http://h4labs.org/calculating-yesterday-and-tomorrow-in-swift/
     func tomorrow() -> String {
         var dateComponents = DateComponents()
         dateComponents.setValue(1, for: .day) // +1 day
@@ -338,7 +345,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @objc func doneDatePicker() {
         print("DoneDatePicker")
         try! realm?.write {
-            getItem.dueDate = dueDate
+            getItem.dueDate = globalDueDate ?? Date()
         }
         
         toolBar.removeFromSuperview()
