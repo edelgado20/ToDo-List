@@ -52,7 +52,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         // Hides the keyboard when user taps anywhere else other than the keyboard
         // https://stackoverflow.com/questions/34030387/uitableview-didselectrowatindexpath-not-being-called
-//        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
+//        let tapGesture = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
+//        tapGesture.cancelsTouchesInView = false
+//        view.addGestureRecognizer(tapGesture)
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
         
@@ -88,7 +90,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             newImportedImages.removeAll()
         }
         
-        // Checking to see if the GlobalDueDate has a value and its value is not the same as the one on realm 
+        // Checking to see if the GlobalDueDate has a value and its value is not the same as the one on realm
         if globalDueDate != nil && getItem.dueDate != globalDueDate {
             try! self.realm?.write {
                 getItem.dueDate = globalDueDate
@@ -212,7 +214,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         if let date = getItem.dueDate {
             dueDateString = dueDateFormatter(dueDate: date)
         } else {
-            dueDateString = "Due Date"
+            dueDateString = dueDateFormatter(dueDate: Date())
         }
         cell.fieldLabel.text = dueDateString
         cell.fieldLabel.highlightedTextColor = UIColor.init(hexString: "0066FF")
@@ -231,12 +233,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @objc func dateChanged(_ sender: UIDatePicker) {
-        print("DateChanged()")
-       
+        
         let dueDateFormatted = dueDateFormatter(dueDate: sender.date)
-        print("DueDateFormatted: \(dueDateFormatted)")
-
-        self.globalDueDate = sender.date // global variable that get's assigned to realm object
+        
         // Getting the dueDate cell to update the label with the dueDate
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
@@ -244,6 +243,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     func dueDateFormatter(dueDate: Date) -> String {
+        self.globalDueDate = dueDate // global variable that get's assigned to realm object
         
         let components = Calendar.current.dateComponents([.month, .day, .year, .weekday], from: dueDate)
 
