@@ -96,6 +96,11 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
                 getItem.dueDate = globalDueDate
             }
         }
+        
+        if self.view.subviews.contains(datePicker) {
+            datePicker.removeFromSuperview()
+            toolBar.removeFromSuperview()
+        }
     }
     
     private func setViewModels(from item: Item) {
@@ -121,7 +126,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         return true
     }
     
-    // MARK: Handling Image Picker
+    // MARK: Image Picker
     func importImageCellPressed() {
         imagePickerController = UIImagePickerController()
         imagePickerController?.delegate = self
@@ -198,12 +203,20 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.imagePickerController?.dismiss(animated: true, completion: nil)
     }
     
+    // MARK: Date Picker
     func showDatePicker() {
+        
+        // Checks if a DatePicker is already being displayed
+        if self.view.subviews.contains(datePicker){
+            return
+        }
+        
         // DatePicker
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
         datePicker.setDate(getItem.dueDate ?? Date(), animated: true)
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
+        self.view.addSubview(datePicker)
         
         // Create a new cell to replace the current one and add the dueDate text on the label
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
@@ -218,8 +231,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
         cell.fieldLabel.text = dueDateString
         cell.fieldLabel.highlightedTextColor = UIColor.init(hexString: "0066FF")
-     
-        self.view.addSubview(datePicker)
         
         // ToolBar
         toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 246, width: self.view.frame.width, height: 50))
