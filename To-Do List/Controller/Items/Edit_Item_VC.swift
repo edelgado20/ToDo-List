@@ -126,6 +126,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         print("touches began")
+        datePicker.removeFromSuperview()
+        toolBar.removeFromSuperview()
     }
     
     // MARK: Image Picker
@@ -245,7 +247,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.view.addSubview(toolBar)
        
         // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
-        let customView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 260))
+        let customView = UIView(frame: CGRect(x: 0, y: 118, width: self.view.frame.width, height: self.view.frame.height - 378))
+        customView.backgroundColor = UIColor.yellow
         self.view.addSubview(customView)
     }
     
