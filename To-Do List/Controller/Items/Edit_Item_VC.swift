@@ -68,9 +68,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             currentDate = "\(month)-\(day)-\(year)"
             currentYear = year
         }
-       
-        print("ViewDidLoad() -> Current Year: \(currentYear)")
-        print("ViewDidLoad() -> Current Date: \(currentDate)")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -124,6 +121,11 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        print("touches began")
     }
     
     // MARK: Image Picker
@@ -211,7 +213,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             return
         }
         
-        // DatePicker
+        // DatePicker https://medium.com/@javedmultani16/uidatepicker-in-swift-3-and-swift-4-example-35a1f23bca4b
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         datePicker.datePickerMode = .date
         datePicker.setDate(getItem.dueDate ?? Date(), animated: true)
@@ -233,7 +235,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         cell.fieldLabel.highlightedTextColor = UIColor.init(hexString: "0066FF")
         
         // ToolBar
-        toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 246, width: self.view.frame.width, height: 50))
+        toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
         toolBar.sizeToFit()
         let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(cancelDatePicker))
         removeButton.tintColor = UIColor.black
@@ -241,6 +243,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneDatePicker))
         toolBar.setItems([removeButton, spaceButton, doneButton], animated: true)
         self.view.addSubview(toolBar)
+       
+        // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
+        let customView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 260))
+        self.view.addSubview(customView)
     }
     
     @objc func dateChanged(_ sender: UIDatePicker) {
