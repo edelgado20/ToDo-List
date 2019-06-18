@@ -212,6 +212,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         // Checks if a DatePicker is already being displayed
         if self.view.subviews.contains(datePicker){
+            datePicker.removeFromSuperview()
+            toolBar.removeFromSuperview()
             return
         }
         
@@ -248,7 +250,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
        
         // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
         let customView = UIView(frame: CGRect(x: 0, y: 118, width: self.view.frame.width, height: self.view.frame.height - 378))
-        customView.backgroundColor = UIColor.yellow
         self.view.addSubview(customView)
     }
     
