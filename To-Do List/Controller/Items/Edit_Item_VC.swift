@@ -222,6 +222,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         // DatePicker https://medium.com/@javedmultani16/uidatepicker-in-swift-3-and-swift-4-example-35a1f23bca4b
         datePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
+        datePicker.backgroundColor = UIColor.white
         datePicker.datePickerMode = .date
         datePicker.setDate(getItem.dueDate ?? Date(), animated: true)
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
@@ -243,6 +244,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         // ToolBar
         toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
+        toolBar.backgroundColor = UIColor.white
         toolBar.sizeToFit()
         let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(cancelDatePicker))
         removeButton.tintColor = UIColor.black
