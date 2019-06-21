@@ -27,6 +27,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var imagePickerController: UIImagePickerController?
     var datePicker = UIDatePicker()
     var toolBar = UIToolbar()
+    var customView = UIView()
     var viewModels: [EditItemVC_FieldCell.ViewModel] = []
     
     enum TableSection: Int {
@@ -97,6 +98,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         if self.view.subviews.contains(datePicker) {
             datePicker.removeFromSuperview()
             toolBar.removeFromSuperview()
+            customView.removeFromSuperview()
         }
     }
     
@@ -128,6 +130,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         print("touches began")
         datePicker.removeFromSuperview()
         toolBar.removeFromSuperview()
+        customView.removeFromSuperview()
     }
     
     // MARK: Image Picker
@@ -214,6 +217,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         if self.view.subviews.contains(datePicker){
             datePicker.removeFromSuperview()
             toolBar.removeFromSuperview()
+            customView.removeFromSuperview()
             return
         }
         
@@ -249,7 +253,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.view.addSubview(toolBar)
        
         // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
-        let customView = UIView(frame: CGRect(x: 0, y: 118, width: self.view.frame.width, height: self.view.frame.height - 378))
+        customView = UIView(frame: CGRect(x: 0, y: 118, width: self.view.frame.width, height: self.view.frame.height - 378))
         self.view.addSubview(customView)
     }
     
@@ -390,6 +394,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
         toolBar.removeFromSuperview()
         datePicker.removeFromSuperview()
+        customView.removeFromSuperview()
         
         let indexPosition = IndexPath(row: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         tableView.reloadRows(at: [indexPosition], with: .fade)
@@ -404,6 +409,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         toolBar.removeFromSuperview()
         datePicker.removeFromSuperview()
+        customView.removeFromSuperview()
     }
     
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
