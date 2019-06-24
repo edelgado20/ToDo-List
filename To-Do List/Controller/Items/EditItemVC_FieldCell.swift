@@ -15,10 +15,12 @@ class EditItemVC_FieldCell: UITableViewCell {
     struct ViewModel {
         var icon: UIImage?
         var title: String?
+        var textColor: UIColor?
     }
     
     func configure(with viewModel: ViewModel) {
         iconPlaceholder.image = viewModel.icon
         fieldLabel.text = viewModel.title
+        fieldLabel.textColor = viewModel.textColor
     }
 }

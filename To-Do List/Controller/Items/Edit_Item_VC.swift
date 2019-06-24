@@ -103,17 +103,32 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     private func setViewModels(from item: Item) {
         // Unwrapping Optional
         var dueDateFormatted: String = ""
+        var color: UIColor = UIColor.black // this color is used for the text color
+        
         if let dueDate = getItem.dueDate {
             dueDateFormatted = dueDateFormatter(dueDate: dueDate)
+            
+            /* Formatting the dueDate to the MM/DD/YYYY format to see if the dueDate is the currentDate(Today) to display the text blue */
+            let components = Calendar.current.dateComponents([.month, .day, .year], from: dueDate)
+            var dueDateSpecialFormat = ""
+            if let month = components.month, let day = components.day, let year = components.year {
+                dueDateSpecialFormat = "\(month)-\(day)-\(year)"
+            }
+            
+            if dueDate >= Date() || dueDateSpecialFormat == currentDate {
+                color = UIColor.init(hexString: "0066FF") // Blue Color
+            } else {
+                color = UIColor.red
+            }
         } else {
             dueDateFormatted = "Due Date"
         }
 
         viewModels = [
-            .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted),
-            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder"),
-            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip),
-            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image")
+            .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted, textColor: color),
+            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder", textColor: UIColor.black),
+            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip, textColor: UIColor.black),
+            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image", textColor: UIColor.black)
         ]
     }
     
@@ -125,7 +140,16 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
+        
+        if globalDueDate != nil && getItem.dueDate != globalDueDate {
+            try! realm?.write {
+                getItem.dueDate = globalDueDate
+            }
+            setViewModels(from: getItem)
+        }
+        
         dismissImagePicker()
+        tableView.reloadData()
     }
     
     func dismissImagePicker() {
@@ -228,7 +252,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         self.view.addSubview(datePicker)
         
-        // Create a new cell to replace the current one and add the dueDate text on the label
+        // Create a new cell to replace the current one and add the dueDate text on the label (https://stackoverflow.com/questions/28431086/getting-data-from-each-uitableview-cells-swift)
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         
@@ -239,8 +263,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         } else {
             dueDateString = dueDateFormatter(dueDate: Date())
         }
+        cell.fieldLabel.textColor = UIColor.init(hexString: "0066FF")
         cell.fieldLabel.text = dueDateString
-        cell.fieldLabel.highlightedTextColor = UIColor.init(hexString: "0066FF")
         
         // ToolBar
         toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
@@ -390,6 +414,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             try! realm?.write {
                 getItem.dueDate = nil
             }
+            setViewModels(from: getItem)
         }
         
         globalDueDate = nil
@@ -400,13 +425,15 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @objc func doneDatePicker() {
-        if globalDueDate != nil {
+        if globalDueDate != nil && getItem.dueDate != globalDueDate {
             try! realm?.write {
                 getItem.dueDate = globalDueDate
             }
+            setViewModels(from: getItem)
         }
         
         dismissImagePicker()
+        tableView.reloadData()
     }
     
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
