@@ -26,6 +26,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
     var imagePickerController: UIImagePickerController?
     var datePicker = UIDatePicker()
+    var deleteDueDateButton = UIButton(type: .custom) // (x) imageButton used in the accessory view
     var toolBar = UIToolbar()
     var customView = UIView() // custom view to be able to use the touchesBegan func and dismiss the datePicker
     var viewModels: [EditItemVC_FieldCell.ViewModel] = []
@@ -51,11 +52,12 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         importedImages.append(contentsOf: getItem.imageNames)
         self.title = "Edit \(getItem.name)"
         
-        // Hides the keyboard when user taps anywhere else other than the keyboard
-        // https://stackoverflow.com/questions/34030387/uitableview-didselectrowatindexpath-not-being-called
-//        let tapGesture = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:)))
-//        tapGesture.cancelsTouchesInView = false
-//        view.addGestureRecognizer(tapGesture)
+        // Adding the x at the end of the cell to be able to delete the dueDate
+        // https://stackoverflow.com/questions/49949150/custom-accessory-button-in-uitableviewcell
+        // https://stackoverflow.com/questions/19274789/how-can-i-change-image-tintcolor-in-ios-and-watchkit
+        deleteDueDateButton.setImage(UIImage(named: "delete")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        deleteDueDateButton.addTarget(self, action: #selector(removeDueDate), for: .touchUpInside)
+        deleteDueDateButton.sizeToFit()
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
         
@@ -148,6 +150,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
+        deleteDueDateButton.imageView?.tintColor = .black
         dismissDatePicker()
         tableView.reloadData()
     }
@@ -261,23 +264,18 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         cell.fieldLabel.textColor = UIColor.init(hexString: "0066FF")
         cell.fieldLabel.text = dueDateString
         
-        // Adding the x at the end of the cell to be able to delete the dueDate
-        // https://stackoverflow.com/questions/49949150/custom-accessory-button-in-uitableviewcell
-        let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: "delete"), for: .normal)
-        button.addTarget(self, action: #selector(removeDueDate), for: .touchUpInside)
-        button.sizeToFit()
-        cell.accessoryView = button
+        deleteDueDateButton.imageView?.tintColor = UIColor.init(hexString: "0066FF") // changing the x image color to blue
+        cell.accessoryView = deleteDueDateButton
         
         // ToolBar
         toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
         toolBar.backgroundColor = UIColor.white
         toolBar.sizeToFit()
-        let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(removeDueDate))
-        removeButton.tintColor = UIColor.black
+        let removeBarButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(removeDueDate))
+        removeBarButton.tintColor = UIColor.black
         let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneDatePicker))
-        toolBar.setItems([removeButton, spaceButton, doneButton], animated: true)
+        toolBar.setItems([removeBarButton, spaceButton, doneButton], animated: true)
         self.view.addSubview(toolBar)
        
         // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
@@ -438,6 +436,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
+        deleteDueDateButton.imageView?.tintColor = .black // change the x back to black
         dismissDatePicker()
         tableView.reloadData()
     }
