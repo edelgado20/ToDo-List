@@ -96,7 +96,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
         
         if self.view.subviews.contains(datePicker) {
-            dismissImagePicker()
+            dismissDatePicker()
         }
     }
     
@@ -148,14 +148,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
-        dismissImagePicker()
+        dismissDatePicker()
         tableView.reloadData()
-    }
-    
-    func dismissImagePicker() {
-        datePicker.removeFromSuperview()
-        toolBar.removeFromSuperview()
-        customView.removeFromSuperview()
     }
     
     // MARK: Image Picker
@@ -240,7 +234,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         // Checks if a DatePicker is already being displayed
         if self.view.subviews.contains(datePicker){
-            dismissImagePicker()
+            dismissDatePicker()
             return
         }
         
@@ -252,7 +246,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         self.view.addSubview(datePicker)
         
-        // Create a new cell to replace the current one and add the dueDate text on the label (https://stackoverflow.com/questions/28431086/getting-data-from-each-uitableview-cells-swift)
+        // Create a new cell to replace the current one and add the dueDate text on the label
+        // https://stackoverflow.com/questions/28431086/getting-data-from-each-uitableview-cells-swift
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         
@@ -266,11 +261,19 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         cell.fieldLabel.textColor = UIColor.init(hexString: "0066FF")
         cell.fieldLabel.text = dueDateString
         
+        // Adding the x at the end of the cell to be able to delete the dueDate
+        // https://stackoverflow.com/questions/49949150/custom-accessory-button-in-uitableviewcell
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "delete"), for: .normal)
+        button.addTarget(self, action: #selector(removeDueDate), for: .touchUpInside)
+        button.sizeToFit()
+        cell.accessoryView = button
+        
         // ToolBar
         toolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
         toolBar.backgroundColor = UIColor.white
         toolBar.sizeToFit()
-        let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(cancelDatePicker))
+        let removeButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(removeDueDate))
         removeButton.tintColor = UIColor.black
         let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneDatePicker))
@@ -283,7 +286,6 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     }
     
     @objc func dateChanged(_ sender: UIDatePicker) {
-        
         let dueDateFormatted = dueDateFormatter(dueDate: sender.date)
         
         // Getting the dueDate cell to update the label with the dueDate
@@ -408,7 +410,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
     }
     
-    @objc func cancelDatePicker() {
+    @objc func removeDueDate() {
         // Set to nil if there is a due date value on the object
         if (getItem.dueDate != nil)  {
             try! realm?.write {
@@ -418,9 +420,13 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
         
         globalDueDate = nil
-        dismissImagePicker()
+        if self.view.subviews.contains(datePicker) {
+            dismissDatePicker()
+        }
         
         let indexPosition = IndexPath(row: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        let cell = tableView.cellForRow(at: indexPosition) as! EditItemVC_FieldCell
+        cell.accessoryView = nil // delete the button which contains the x at the end of the cell
         tableView.reloadRows(at: [indexPosition], with: .fade)
     }
     
@@ -432,8 +438,14 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
-        dismissImagePicker()
+        dismissDatePicker()
         tableView.reloadData()
+    }
+    
+    func dismissDatePicker() {
+        datePicker.removeFromSuperview()
+        toolBar.removeFromSuperview()
+        customView.removeFromSuperview()
     }
     
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
