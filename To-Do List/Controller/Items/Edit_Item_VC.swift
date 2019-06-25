@@ -29,6 +29,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var deleteDueDateButton = UIButton(type: .custom) // (x) imageButton used in the accessory view
     var toolBar = UIToolbar()
     var customView = UIView() // custom view to be able to use the touchesBegan func and dismiss the datePicker
+    var reminderTimePicker = UIDatePicker()
+    var reminderTimePickerToolBar = UIToolbar()
     var viewModels: [EditItemVC_FieldCell.ViewModel] = []
     
     enum TableSection: Int {
@@ -447,6 +449,56 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         customView.removeFromSuperview()
     }
     
+    // MARK: Reminder Date Picker
+    func showReminderTimerPicker() {
+        print("Reminder Timer Picker")
+        
+        // Date Picker
+        reminderTimePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
+        reminderTimePicker.backgroundColor = .white
+        reminderTimePicker.datePickerMode = .dateAndTime
+        reminderTimePicker.setDate(getItem.reminder ?? Date(), animated: true) // add an hour to this if reminder is nil
+        reminderTimePicker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
+        self.view.addSubview(reminderTimePicker)
+        
+        // Toolbar
+        reminderTimePickerToolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
+        reminderTimePickerToolBar.backgroundColor = .white
+        reminderTimePickerToolBar.sizeToFit()
+        let removeBarButton = UIBarButtonItem(title: "Remove", style: .plain, target: self, action: #selector(removeReminderDate))
+        removeBarButton.tintColor = .black
+        let spaceBarButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        let doneBarButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneReminderDatePressed))
+        reminderTimePickerToolBar.setItems([removeBarButton, spaceBarButton, doneBarButton], animated: true)
+        self.view.addSubview(reminderTimePickerToolBar)
+        
+        // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
+        customView = UIView(frame: CGRect(x: 0, y: 118, width: self.view.frame.width, height: self.view.frame.height - 378))
+        self.view.addSubview(customView)
+    }
+    
+    @objc func timeChanged() {
+        print("Time Changed")
+        
+    }
+    
+    @objc func removeReminderDate() {
+        
+        dismissReminderTimePicker()
+    }
+    
+    @objc func doneReminderDatePressed() {
+        
+        
+        dismissReminderTimePicker()
+    }
+    
+    func dismissReminderTimePicker() {
+        reminderTimePicker.removeFromSuperview()
+        reminderTimePickerToolBar.removeFromSuperview()
+        customView.removeFromSuperview()
+    }
+    
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
 }
 
@@ -492,6 +544,8 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             switch indexPath.row {
             case FieldRow.dueDate.rawValue:
                 showDatePicker()
+            case FieldRow.reminder.rawValue:
+                showReminderTimerPicker()
             case FieldRow.note.rawValue:
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
                 noteVC.note = getItem.descrip
