@@ -102,6 +102,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         if self.view.subviews.contains(datePicker) {
             dismissDatePicker()
         }
+        if self.view.subviews.contains(reminderTimePicker) {
+            dismissReminderTimePicker()
+        }
     }
     
     private func setViewModels(from item: Item) {
@@ -153,7 +156,13 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
         
         deleteDueDateButton.imageView?.tintColor = .black
-        dismissDatePicker()
+        if self.view.subviews.contains(datePicker) {
+            dismissDatePicker()
+        }
+        if self.view.subviews.contains(reminderTimePicker) {
+            dismissReminderTimePicker()
+        }
+        //dismissDatePicker()
         tableView.reloadData()
     }
     
@@ -236,7 +245,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     // MARK: Date Picker
     func showDatePicker() {
-        
+        if self.view.subviews.contains(reminderTimePicker) {
+            dismissReminderTimePicker()
+        }
         // Checks if a DatePicker is already being displayed
         if self.view.subviews.contains(datePicker){
             dismissDatePicker()
@@ -452,6 +463,14 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     // MARK: Reminder Date Picker
     func showReminderTimerPicker() {
         print("Reminder Timer Picker")
+        if self.view.subviews.contains(datePicker) {
+            dismissDatePicker()
+        }
+        if self.view.subviews.contains(reminderTimePicker) {
+            dismissReminderTimePicker()
+            return
+        }
+        
         
         // Date Picker
         reminderTimePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
@@ -473,7 +492,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.view.addSubview(reminderTimePickerToolBar)
         
         // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
-        customView = UIView(frame: CGRect(x: 0, y: 118, width: self.view.frame.width, height: self.view.frame.height - 378))
+        customView = UIView(frame: CGRect(x: 0, y: 158, width: self.view.frame.width, height: self.view.frame.height - 418))
         self.view.addSubview(customView)
     }
     
@@ -497,6 +516,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         reminderTimePicker.removeFromSuperview()
         reminderTimePickerToolBar.removeFromSuperview()
         customView.removeFromSuperview()
+        let indexPath = IndexPath(item: FieldRow.reminder.rawValue, section: TableSection.fields.rawValue)
+        tableView.deselectRow(at: indexPath, animated: false)
     }
     
     @IBAction func unwind(segue: UIStoryboardSegue) { print("unwind") }
