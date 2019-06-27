@@ -460,9 +460,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         customView.removeFromSuperview()
     }
     
-    // MARK: Reminder Date Picker
+    // MARK: Reminder Time Picker
     func showReminderTimerPicker() {
-        print("Reminder Timer Picker")
         if self.view.subviews.contains(datePicker) {
             dismissDatePicker()
         }
@@ -471,14 +470,23 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             return
         }
         
-        
-        // Date Picker
+        // Date & Time Picker
         reminderTimePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         reminderTimePicker.backgroundColor = .white
         reminderTimePicker.datePickerMode = .dateAndTime
-        reminderTimePicker.setDate(getItem.reminder ?? Date(), animated: true) // add an hour to this if reminder is nil
+        if let date = getItem.reminder {
+            reminderTimePicker.setDate(date, animated: true)
+        } else {
+            let calendar = Calendar.current
+            let datePlusHour = calendar.date(byAdding: .hour, value: 1, to: Date()) ?? Date()
+            reminderTimePicker.setDate(datePlusHour, animated: true)
+        }
         reminderTimePicker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
         self.view.addSubview(reminderTimePicker)
+        
+        let indexPath = IndexPath(row: FieldRow.reminder.rawValue, section: TableSection.fields.rawValue)
+        let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
+        
         
         // Toolbar
         reminderTimePickerToolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
