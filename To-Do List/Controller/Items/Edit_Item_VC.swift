@@ -474,6 +474,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         reminderTimePicker = UIDatePicker(frame: CGRect(x: 0, y: self.view.frame.height - 216, width: self.view.frame.width, height: 216))
         reminderTimePicker.backgroundColor = .white
         reminderTimePicker.datePickerMode = .dateAndTime
+        reminderTimePicker.timeZone = TimeZone.autoupdatingCurrent
         if let date = getItem.reminder {
             reminderTimePicker.setDate(date, animated: true)
         } else {
@@ -516,13 +517,22 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         self.view.addSubview(customView)
     }
     
-    @objc func timeChanged() {
+    @objc func timeChanged(_ sender: UIDatePicker) {
         print("Time Changed")
+        print(sender.date)
         
+        let timeComponents = Calendar.current.dateComponents([.hour, .minute, .timeZone], from: sender.date)
+        
+        if let hour = timeComponents.hour, let minute = timeComponents.minute {
+            print("\(hour):\(minute)")
+        } else {
+            print("error")
+        }
     }
     
-    func reminderTimeFormatter() {
+    func reminderTimeFormatter() -> String{
         
+        return "Remind at "
     }
     
     @objc func removeReminderDate() {
