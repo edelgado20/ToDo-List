@@ -23,22 +23,6 @@ class EditItemVC_FieldCell: UITableViewCell {
         fieldLabel.text = viewModel.title
         fieldLabel.textColor = viewModel.textColor
     }
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        print("Override")
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        print("Override Init")
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        print("Required Init")
-    }
-    
-    override func awakeFromNib() {
-        print("awakeFromNib()")
-        
-    }
 }
 
 //class Cell: UITableViewCell {

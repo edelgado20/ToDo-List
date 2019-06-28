@@ -487,6 +487,18 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         let indexPath = IndexPath(row: FieldRow.reminder.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         
+        // NSAttributedString (Title & Subtitle)
+        let titleString = "Remind me at 8:00 PM"
+        let titleFont = UIFont.systemFont(ofSize: 10)
+        let titleAttributes = [NSAttributedString.Key.font: titleFont]
+        let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
+        
+        let subtitleFont = UIFont.systemFont(ofSize: 8)
+        let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
+        let mutableSubtitle = NSMutableAttributedString(string: "Today", attributes: subtitleAttributes)
+        mutableTitle.append(mutableSubtitle)
+        
+        cell.fieldLabel.attributedText = mutableTitle
         
         // Toolbar
         reminderTimePickerToolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
@@ -506,6 +518,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     @objc func timeChanged() {
         print("Time Changed")
+        
+    }
+    
+    func reminderTimeFormatter() {
         
     }
     
