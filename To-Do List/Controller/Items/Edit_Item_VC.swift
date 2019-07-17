@@ -117,7 +117,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         var color: UIColor = UIColor.black // this color is used for the text color
         
         if let dueDate = getItem.dueDate {
-            dueDateFormatted = "Due " + dueDateFormatter(dueDate: dueDate)
+            dueDateFormatted = dueDateFormatter(dueDate: dueDate)
             
             /* Formatting the dueDate to the MM/DD/YYYY format to see if the dueDate is the currentDate(Today) to display the text blue */
             let components = Calendar.current.dateComponents([.month, .day, .year], from: dueDate)
@@ -263,6 +263,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         datePicker.backgroundColor = UIColor.white
         datePicker.datePickerMode = .date
         datePicker.setDate(getItem.dueDate ?? Date(), animated: true)
+        globalDueDate = getItem.dueDate ?? Date()
         datePicker.addTarget(self, action: #selector(dateChanged(_:)), for: .valueChanged)
         self.view.addSubview(datePicker)
         
@@ -302,7 +303,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     @objc func dateChanged(_ sender: UIDatePicker) {
         self.globalDueDate = sender.date // global variable that get's assigned to realm object
-        let dueDateFormatted = "Due " + dueDateFormatter(dueDate: sender.date)
+        let dueDateFormatted = dueDateFormatter(dueDate: sender.date)
         
         // Getting the dueDate cell to update the label with the dueDate
         let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
@@ -321,7 +322,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             let monthString = convertToMonth(month: month)
             
             if date == currentDate {
-                return "Today"
+                return "Due Today"
             }
         
             /* Formating the dueDate to MM-dd-yyyy format to check if the dueDate is a yesterday or tomorrow */
@@ -331,21 +332,21 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             
             let tomorrowString = tomorrow()
             if dueDateTrim == tomorrowString {
-                return "Tomorrow"
+                return "Due Tomorrow"
             }
             
             let yesterdayString = yesterday()
             if dueDateTrim == yesterdayString {
-                return "Yesterday"
+                return "Due Yesterday"
             }
             
             if year == currentYear {
-                return "\(dayOfWeek), \(monthString) \(day)"
+                return "Due \(dayOfWeek), \(monthString) \(day)"
             } else {
-                return "\(dayOfWeek), \(monthString) \(day), \(year)"
+                return "Due \(dayOfWeek), \(monthString) \(day), \(year)"
             }
         } else {
-            return "Date"
+            return "Due Date"
         }
     }
     
@@ -441,6 +442,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         let indexPosition = IndexPath(row: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPosition) as! EditItemVC_FieldCell
         cell.accessoryView = nil // delete the button which contains the x at the end of the cell
+        
         tableView.reloadRows(at: [indexPosition], with: .fade)
     }
     
@@ -452,8 +454,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
-        deleteDueDateButton.imageView?.tintColor = .black // change the x back to black
         dismissDatePicker()
+        deleteDueDateButton.imageView?.tintColor = .black // change the x back to black
+        
         tableView.reloadData()
     }
     
@@ -478,6 +481,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         reminderTimePicker.backgroundColor = .white
         reminderTimePicker.datePickerMode = .dateAndTime
         reminderTimePicker.timeZone = TimeZone.autoupdatingCurrent
+        
         // Setting Time for Picker
         if let date = getItem.reminder {
             reminderTimePicker.setDate(date, animated: true)
@@ -512,7 +516,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         mutableTitle.append(mutableSubtitle)
         
         cell.fieldLabel.attributedText = mutableTitle
-        tableView.reloadRows(at: [indexPath], with: .automatic)
+        //tableView.reloadRows(at: [indexPath], with: .automatic)
+        
         // Toolbar
         reminderTimePickerToolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
         reminderTimePickerToolBar.backgroundColor = .white
