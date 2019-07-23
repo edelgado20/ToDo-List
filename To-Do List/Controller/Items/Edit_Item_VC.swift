@@ -34,12 +34,12 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var reminderTimePickerToolBar = UIToolbar()
     var viewModels: [EditItemVC_FieldCell.ViewModel] = []
     
-    enum TableSection: Int {
+    enum TableViewSection: Int {
         case fields = 0
         case images = 1
     }
     
-    enum FieldRow: Int {
+    enum TableViewRow: Int {
         case dueDate = 0
         case reminder = 1
         case note = 2
@@ -136,10 +136,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
 
         viewModels = [
-            .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted, textColor: color),
-            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder", textColor: UIColor.black),
-            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip, textColor: UIColor.black),
-            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image", textColor: UIColor.black)
+            .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted, textColor: color, attributedText: nil),
+            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder", textColor: UIColor.black, attributedText: nil),
+            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip, textColor: UIColor.black, attributedText: nil),
+            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image", textColor: UIColor.black, attributedText: nil)
         ]
     }
     
@@ -269,7 +269,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         // Create a new cell to replace the current one and add the dueDate text on the label
         // https://stackoverflow.com/questions/28431086/getting-data-from-each-uitableview-cells-swift
-        let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        let indexPath = IndexPath(item: TableViewRow.dueDate.rawValue, section: TableViewSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         
         // Unwrapping Optional
@@ -306,7 +306,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         let dueDateFormatted = dueDateFormatter(dueDate: sender.date)
         
         // Getting the dueDate cell to update the label with the dueDate
-        let indexPath = IndexPath(item: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        let indexPath = IndexPath(item: TableViewRow.dueDate.rawValue, section: TableViewSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         cell.fieldLabel.text = dueDateFormatted
     }
@@ -439,7 +439,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             dismissDatePicker()
         }
         
-        let indexPosition = IndexPath(row: FieldRow.dueDate.rawValue, section: TableSection.fields.rawValue)
+        let indexPosition = IndexPath(row: TableViewRow.dueDate.rawValue, section: TableViewSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPosition) as! EditItemVC_FieldCell
         cell.accessoryView = nil // delete the button which contains the x at the end of the cell
         
@@ -483,33 +483,33 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         reminderTimePicker.timeZone = TimeZone.autoupdatingCurrent
         
         // Setting Time for Picker
-        if let date = getItem.reminder {
-            reminderTimePicker.setDate(date, animated: true)
+        if let dateAndTime = getItem.reminder {
+            reminderTimePicker.setDate(dateAndTime, animated: true)
         } else {
             reminderTimePicker.setDate(timePlusHour, animated: true)
         }
         reminderTimePicker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
         self.view.addSubview(reminderTimePicker)
         
-        let indexPath = IndexPath(row: FieldRow.reminder.rawValue, section: TableSection.fields.rawValue)
+        let indexPath = IndexPath(row: TableViewRow.reminder.rawValue, section: TableViewSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
         
         var reminderTimeString = ""
         var reminderDateString = ""
         if let reminderDateAndTime = getItem.reminder {
             reminderTimeString = reminderTimeFormatter(time: reminderDateAndTime)
-            reminderDateString = "Due " + dueDateFormatter(dueDate: reminderDateAndTime)
+            reminderDateString = dueDateFormatter(dueDate: reminderDateAndTime)
         } else {
             reminderTimeString = reminderTimeFormatter(time: timePlusHour)
-            reminderDateString = "Due " + dueDateFormatter(dueDate: timePlusHour)
+            reminderDateString = dueDateFormatter(dueDate: timePlusHour)
         }
-        
+
         // NSAttributedString (Title & Subtitle)
         let titleString = reminderTimeString //"Remind me at 8:00 PM"
         let titleFont = UIFont.systemFont(ofSize: 10)
         let titleAttributes = [NSAttributedString.Key.font: titleFont]
         let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
-        
+
         let subtitleFont = UIFont.systemFont(ofSize: 8)
         let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
         let mutableSubtitle = NSMutableAttributedString(string: reminderDateString, attributes: subtitleAttributes)
@@ -532,7 +532,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // Added a custom view to be able to use the touchesBegan func and dismiss the datePicker when user touches outside
         customView = UIView(frame: CGRect(x: 0, y: 158, width: self.view.frame.width, height: self.view.frame.height - 418))
         self.view.addSubview(customView)
-    }
+            }
     
     @objc func timeChanged(_ sender: UIDatePicker) {
         print("Time Changed")
@@ -567,7 +567,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         reminderTimePicker.removeFromSuperview()
         reminderTimePickerToolBar.removeFromSuperview()
         customView.removeFromSuperview()
-        let indexPath = IndexPath(item: FieldRow.reminder.rawValue, section: TableSection.fields.rawValue)
+        let indexPath = IndexPath(item: TableViewRow.reminder.rawValue, section: TableViewSection.fields.rawValue)
         tableView.deselectRow(at: indexPath, animated: false)
     }
     
@@ -582,7 +582,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     // There is just one row in every section
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == TableSection.fields.rawValue {
+        if section == TableViewSection.fields.rawValue {
             return viewModels.count
         } else {
             return importedImages.count
@@ -590,7 +590,30 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == TableSection.fields.rawValue {
+        if indexPath.section == TableViewSection.fields.rawValue {
+//            if indexPath.row == TableViewRow.reminder.rawValue {
+//                var reminderTimeString = ""
+//                var reminderDateString = ""
+//                if let reminderDateAndTime = getItem.reminder {
+//                    reminderTimeString = reminderTimeFormatter(time: reminderDateAndTime)
+//                    reminderDateString = dueDateFormatter(dueDate: reminderDateAndTime)
+//                } else {
+//                    reminderTimeString = reminderTimeFormatter(time: timePlusHour)
+//                    reminderDateString = dueDateFormatter(dueDate: timePlusHour)
+//                }
+//
+//                // NSAttributedString (Title & Subtitle)
+//                let titleString = reminderTimeString //"Remind me at 8:00 PM"
+//                let titleFont = UIFont.systemFont(ofSize: 10)
+//                let titleAttributes = [NSAttributedString.Key.font: titleFont]
+//                let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
+//
+//                let subtitleFont = UIFont.systemFont(ofSize: 8)
+//                let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
+//                let mutableSubtitle = NSMutableAttributedString(string: reminderDateString, attributes: subtitleAttributes)
+//                mutableTitle.append(mutableSubtitle)
+//            }
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell", for: indexPath)
             (cell as? EditItemVC_FieldCell)?.configure(with: viewModels[indexPath.row]) // setup cell
             
@@ -611,19 +634,19 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Section
-        if indexPath.section == TableSection.fields.rawValue {
+        if indexPath.section == TableViewSection.fields.rawValue {
             // Row
             switch indexPath.row {
-            case FieldRow.dueDate.rawValue:
+            case TableViewRow.dueDate.rawValue:
                 showDatePicker()
-            case FieldRow.reminder.rawValue:
+            case TableViewRow.reminder.rawValue:
                 showReminderTimerPicker()
-            case FieldRow.note.rawValue:
+            case TableViewRow.note.rawValue:
                 let noteVC = self.storyboard?.instantiateViewController(withIdentifier: "NoteViewController") as! NoteVC
                 noteVC.note = getItem.descrip
                 noteVC.subtitle = getItem.name
                 present(noteVC, animated: true, completion: nil)
-            case FieldRow.importImage.rawValue:
+            case TableViewRow.importImage.rawValue:
                 importImageCellPressed()
                 tableView.deselectRow(at: indexPath, animated: true)
             default:
@@ -633,7 +656,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == TableSection.fields.rawValue {
+        if indexPath.section == TableViewSection.fields.rawValue {
             return UITableView.automaticDimension // for stack view
         } else { // Images Section
             // Get the image ratio to calculate the cell height dynamically
@@ -649,7 +672,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
     
     // Only enables the Images TableView Section to be edited/deleted
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.section == TableSection.images.rawValue {
+        if indexPath.section == TableViewSection.images.rawValue {
             return true
         }
         return false

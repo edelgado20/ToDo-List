@@ -16,75 +16,29 @@ class EditItemVC_FieldCell: UITableViewCell {
         var icon: UIImage?
         var title: String?
         var textColor: UIColor?
+        var attributedText: NSAttributedString?
     }
     
     func configure(with viewModel: ViewModel) {
         iconPlaceholder.image = viewModel.icon
-        fieldLabel.text = viewModel.title
+        
+//        let titleString = "Remind me at 8:00 PM"
+//        let titleFont = UIFont.systemFont(ofSize: 12)
+//        let titleAttributes = [NSAttributedString.Key.font: titleFont]
+//        let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
+//
+//        let subtitleFont = UIFont.systemFont(ofSize: 8)
+//        let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
+//        let mutableSubtitle = NSMutableAttributedString(string: Date().description, attributes: subtitleAttributes)
+//        mutableTitle.append(mutableSubtitle)
+//        fieldLabel.attributedText = mutableTitle
+        
+        if let subText = viewModel.attributedText {
+            // NSAttributedString (Title & Subtitle)
+            fieldLabel.attributedText = subText
+        } else {
+            fieldLabel.text = viewModel.title
+        }
         fieldLabel.textColor = viewModel.textColor
     }
 }
-
-//class Cell: UITableViewCell {
-//
-//    @IBOutlet weak var detailLabel: UILabel!
-//
-//}
-//
-//
-//
-//class ViewController: UIViewController {
-//
-//    let data = (0..<10).map {$0}
-//
-//    var hiddenIndices = Set<Int>()
-//
-//}
-//
-//
-//
-//extension ViewController: UITableViewDataSource {
-//
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//
-//        return data.count
-//
-//    }
-//
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//
-//        let cell =  tableView.dequeueReusableCell(withIdentifier: "a", for: indexPath)
-//
-//        if let cell = cell as? Cell {
-//
-//            cell.detailLabel.isHidden = hiddenIndices.contains(indexPath.row)
-//
-//        }
-//
-//        return cell
-//
-//    }
-//
-//}
-//
-//
-//
-//extension ViewController: UITableViewDelegate {
-//
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//
-//        if hiddenIndices.contains(indexPath.row) {
-//
-//            hiddenIndices.remove(indexPath.row)
-//
-//        } else {
-//
-//            hiddenIndices.insert(indexPath.row)
-//
-//        }
-//
-//        tableView.reloadRows(at: [indexPath], with: .automatic)
-//
-//    }
-//
-//}
