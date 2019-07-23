@@ -61,6 +61,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         deleteDueDateButton.setImage(UIImage(named: "delete")?.withRenderingMode(.alwaysTemplate), for: .normal)
         deleteDueDateButton.addTarget(self, action: #selector(removeDueDate), for: .touchUpInside)
         deleteDueDateButton.sizeToFit()
+        deleteDueDateButton.imageView?.tintColor = .black
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
         
@@ -506,11 +507,11 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
 
         // NSAttributedString (Title & Subtitle)
         let titleString = reminderTimeString //"Remind me at 8:00 PM"
-        let titleFont = UIFont.systemFont(ofSize: 10)
+        let titleFont = UIFont.systemFont(ofSize: 17)
         let titleAttributes = [NSAttributedString.Key.font: titleFont]
         let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
 
-        let subtitleFont = UIFont.systemFont(ofSize: 8)
+        let subtitleFont = UIFont.systemFont(ofSize: 12)
         let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
         let mutableSubtitle = NSMutableAttributedString(string: reminderDateString, attributes: subtitleAttributes)
         mutableTitle.append(mutableSubtitle)
@@ -616,6 +617,12 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "fieldCell", for: indexPath)
             (cell as? EditItemVC_FieldCell)?.configure(with: viewModels[indexPath.row]) // setup cell
+            
+            if indexPath.row == TableViewRow.dueDate.rawValue {
+                if (getItem.dueDate != nil) {
+                    cell.accessoryView = deleteDueDateButton // adds the x to the end of the cell 
+                }
+            }
             
             // Create a background view to change the cell color when selected
             let backgroundView = UIView()
