@@ -36,9 +36,6 @@ class ItemsVC: UIViewController {
             let indexPath = TABLEVIEW.indexPath(for: cell)
             let editItemVC = segue.destination as! Edit_Item_VC
             editItemVC.getItem = itemsResults![(indexPath!.row)]
-        } else if identifier == "addItemSegue" {
-            let addItemVC = segue.destination as! AddItemVC
-            addItemVC.category = self.category
         } else {
             print("Error unknown identifier")
         }

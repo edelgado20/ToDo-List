@@ -33,3 +33,48 @@ extension UIColor {
         self.init(red:red, green:green, blue:blue, alpha:alpha)
     }
 }
+
+extension UIImage {
+    func getImageRatio() -> CGFloat {
+        let imageRatio = CGFloat(self.size.width / self.size.height)
+        return imageRatio
+    }
+    
+    func image(scaledToFitIn targetSize: CGSize) -> UIImage {
+        
+        let normalizedSelf = self.normalizedImage()
+        
+        let imageWidth = normalizedSelf.size.width * normalizedSelf.scale
+        let imageHeight = normalizedSelf.size.height * normalizedSelf.scale
+        
+        if imageWidth <= targetSize.width && imageHeight <= targetSize.height {
+            return normalizedSelf
+        }
+        
+        let widthRatio = imageWidth / targetSize.width
+        let heightRatio = imageHeight / targetSize.height
+        let scaleFactor = max(widthRatio, heightRatio)
+        let scaledSize = CGSize(width: imageWidth / scaleFactor, height: imageHeight / scaleFactor)
+        
+        return normalizedSelf.image(scaledToSizeInPixels: scaledSize)
+    }
+    
+    func normalizedImage() -> UIImage {
+        if (self.imageOrientation == .up) {
+            return self
+        }
+        UIGraphicsBeginImageContextWithOptions(self.size, true, self.scale)
+        draw(in: CGRect(origin: .zero, size: self.size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+    
+    func image(scaledToSizeInPixels targetSize: CGSize) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(targetSize, true, 1)
+        draw(in: CGRect(origin: .zero, size: targetSize))
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+        return image
+    }
+}

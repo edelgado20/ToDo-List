@@ -10,7 +10,6 @@
 		3F11230722592DBB001C339F /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F11230622592DB9001C339F /* FileService.swift */; };
 		3F179030211DAC40000BC603 /* AddCategoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F17902F211DAC40000BC603 /* AddCategoryVC.swift */; };
 		3F179032211DACFE000BC603 /* ItemsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F179031211DACFE000BC603 /* ItemsVC.swift */; };
-		3F179034211DAD8A000BC603 /* AddItemVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F179033211DAD8A000BC603 /* AddItemVC.swift */; };
 		3F17903B211E28FA000BC603 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F17903A211E28FA000BC603 /* Category.swift */; };
 		3F17903D211EB68C000BC603 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F17903C211EB68C000BC603 /* Item.swift */; };
 		3F236FD6227FC64500407A86 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F236FD5227FC64500407A86 /* AppDelegate.swift */; };
@@ -53,7 +52,6 @@
 		3F11230622592DB9001C339F /* FileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileService.swift; sourceTree = "<group>"; };
 		3F17902F211DAC40000BC603 /* AddCategoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryVC.swift; sourceTree = "<group>"; };
 		3F179031211DACFE000BC603 /* ItemsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsVC.swift; sourceTree = "<group>"; };
-		3F179033211DAD8A000BC603 /* AddItemVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemVC.swift; sourceTree = "<group>"; };
 		3F17903A211E28FA000BC603 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		3F17903C211EB68C000BC603 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		3F236FD3227FC64400407A86 /* GestureRecognizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GestureRecognizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -191,7 +189,6 @@
 			children = (
 				3F179031211DACFE000BC603 /* ItemsVC.swift */,
 				468A566921E3E6150048CD71 /* ItemCell.swift */,
-				3F179033211DAD8A000BC603 /* AddItemVC.swift */,
 				3F750E192120FF1F00CCEC62 /* Edit_Item_VC.swift */,
 				3FE3B20C22A2FE2B0037DE97 /* EditItemVC_FieldCell.swift */,
 				3FE3B20E22A337020037DE97 /* EditItemVC_ImageCell.swift */,
@@ -381,7 +378,6 @@
 				3FE3B20F22A337020037DE97 /* EditItemVC_ImageCell.swift in Sources */,
 				460412572202DABA007EF7B4 /* CategoryCell.swift in Sources */,
 				3F11230722592DBB001C339F /* FileService.swift in Sources */,
-				3F179034211DAD8A000BC603 /* AddItemVC.swift in Sources */,
 				3F750E1A2120FF1F00CCEC62 /* Edit_Item_VC.swift in Sources */,
 				469BD9E121DEA9F100B8835A /* EditCategoryVC.swift in Sources */,
 				3F179030211DAC40000BC603 /* AddCategoryVC.swift in Sources */,
