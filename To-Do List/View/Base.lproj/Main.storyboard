@@ -373,30 +373,33 @@
                                             <rect key="frame" x="0.0" y="0.0" width="359" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" alignment="top" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="IlO-Bg-bGg">
-                                                    <rect key="frame" x="8" y="11" width="336" height="22"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="IlO-Bg-bGg">
+                                                    <rect key="frame" x="8" y="0.0" width="336" height="44"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pen" translatesAutoresizingMaskIntoConstraints="NO" id="vCA-hg-PAn">
-                                                            <rect key="frame" x="0.0" y="0.0" width="20" height="22"/>
+                                                            <rect key="frame" x="0.0" y="11" width="20" height="22"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="22" id="1lu-ng-IhQ"/>
                                                                 <constraint firstAttribute="width" constant="20" id="7YF-8D-M06"/>
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Add a note..." textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kcS-oW-g7l">
-                                                            <rect key="frame" x="35" y="0.0" width="301" height="20.5"/>
+                                                            <rect key="frame" x="35" y="12" width="301" height="20.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                     </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="44" id="a96-Io-XUb"/>
+                                                    </constraints>
                                                 </stackView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="IlO-Bg-bGg" secondAttribute="bottom" constant="11" id="4em-cZ-tG2"/>
+                                                <constraint firstItem="IlO-Bg-bGg" firstAttribute="top" secondItem="GDB-77-8la" secondAttribute="top" id="YBn-1e-dj0"/>
                                                 <constraint firstAttribute="trailing" secondItem="IlO-Bg-bGg" secondAttribute="trailing" constant="15" id="jpI-Vk-Yo0"/>
+                                                <constraint firstAttribute="bottom" secondItem="IlO-Bg-bGg" secondAttribute="bottom" id="l0c-jT-WB7"/>
                                                 <constraint firstItem="IlO-Bg-bGg" firstAttribute="leading" secondItem="GDB-77-8la" secondAttribute="leading" constant="8" id="l4O-cj-vEY"/>
-                                                <constraint firstItem="IlO-Bg-bGg" firstAttribute="top" secondItem="GDB-77-8la" secondAttribute="top" constant="11" id="lVa-nQ-33L"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" red="0.95686274509803915" green="0.95294117647058818" blue="0.94509803921568625" alpha="1" colorSpace="calibratedRGB"/>
@@ -525,7 +528,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FPN-Qe-JbO" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="FkX-bt-vhu" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="4265" y="451"/>
+            <point key="canvasLocation" x="4190" y="109"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="WZ3-GM-v7N">

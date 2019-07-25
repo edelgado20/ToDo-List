@@ -22,6 +22,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var currentDate = ""
     var timePlusHour: Date = Date() // set up on viewDidLoad and used to set the timePicker for the reminder
     var globalDueDate: Date?
+    var globalReminderDate: Date?
     var getItem = Item()
     var importedImages: [String] = [] // array containing all importedImages for tableview data
     var newImportedImages: [String] = [] // array for new importedImages (use to add to realm)
@@ -118,7 +119,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         var color: UIColor = UIColor.black // this color is used for the text color
         
         if let dueDate = getItem.dueDate {
-            dueDateFormatted = dueDateFormatter(dueDate: dueDate)
+            dueDateFormatted = dueDateFormatter(dueDate: dueDate, isReminderDate: false)
             
             /* Formatting the dueDate to the MM/DD/YYYY format to see if the dueDate is the currentDate(Today) to display the text blue */
             let components = Calendar.current.dateComponents([.month, .day, .year], from: dueDate)
@@ -276,9 +277,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // Unwrapping Optional
         var dueDateString: String = ""
         if let date = getItem.dueDate {
-            dueDateString = dueDateFormatter(dueDate: date)
+            dueDateString = dueDateFormatter(dueDate: date, isReminderDate: false)
         } else {
-            dueDateString = dueDateFormatter(dueDate: Date())
+            dueDateString = dueDateFormatter(dueDate: Date(), isReminderDate: false)
         }
         cell.fieldLabel.textColor = UIColor.init(hexString: "0066FF")
         cell.fieldLabel.text = dueDateString
@@ -304,7 +305,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     
     @objc func dateChanged(_ sender: UIDatePicker) {
         self.globalDueDate = sender.date // global variable that get's assigned to realm object
-        let dueDateFormatted = dueDateFormatter(dueDate: sender.date)
+        let dueDateFormatted = dueDateFormatter(dueDate: sender.date, isReminderDate: false)
         
         // Getting the dueDate cell to update the label with the dueDate
         let indexPath = IndexPath(item: TableViewRow.dueDate.rawValue, section: TableViewSection.fields.rawValue)
@@ -312,7 +313,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         cell.fieldLabel.text = dueDateFormatted
     }
     
-    func dueDateFormatter(dueDate: Date) -> String {
+    func dueDateFormatter(dueDate: Date, isReminderDate: Bool) -> String {
         let components = Calendar.current.dateComponents([.month, .day, .year, .weekday], from: dueDate)
 
         if let month = components.month, let day = components.day, let year = components.year, let weekday = components.weekday {
@@ -323,7 +324,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             let monthString = convertToMonth(month: month)
             
             if date == currentDate {
-                return "Due Today"
+                let value = isReminderDate ? "Today" : "Due Today"
+                return value
             }
         
             /* Formating the dueDate to MM-dd-yyyy format to check if the dueDate is a yesterday or tomorrow */
@@ -333,18 +335,22 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             
             let tomorrowString = tomorrow()
             if dueDateTrim == tomorrowString {
-                return "Due Tomorrow"
+                let value = isReminderDate ? "Tomorrow" : "Due Tomorrow"
+                return value
             }
             
             let yesterdayString = yesterday()
             if dueDateTrim == yesterdayString {
-                return "Due Yesterday"
+                let value = isReminderDate ? "Yesterday" : "Due Yesterday"
+                return value
             }
             
             if year == currentYear {
-                return "Due \(dayOfWeek), \(monthString) \(day)"
+                let value = isReminderDate ? "\(dayOfWeek), \(monthString) \(day)" : "Due \(dayOfWeek), \(monthString) \(day)"
+                return value
             } else {
-                return "Due \(dayOfWeek), \(monthString) \(day), \(year)"
+                let value = isReminderDate ? "\(dayOfWeek), \(monthString) \(day), \(year)" : "Due \(dayOfWeek), \(monthString) \(day), \(year)"
+                return value
             }
         } else {
             return "Due Date"
@@ -499,10 +505,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         var reminderDateString = ""
         if let reminderDateAndTime = getItem.reminder {
             reminderTimeString = reminderTimeFormatter(time: reminderDateAndTime)
-            reminderDateString = dueDateFormatter(dueDate: reminderDateAndTime)
+            reminderDateString = dueDateFormatter(dueDate: reminderDateAndTime, isReminderDate: true)
         } else {
             reminderTimeString = reminderTimeFormatter(time: timePlusHour)
-            reminderDateString = dueDateFormatter(dueDate: timePlusHour)
+            reminderDateString = dueDateFormatter(dueDate: timePlusHour, isReminderDate: true)
         }
 
         // NSAttributedString (Title & Subtitle)
@@ -538,9 +544,16 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     @objc func timeChanged(_ sender: UIDatePicker) {
         print("Time Changed")
         print(sender.date)
+        let reminderTimeFormatted = reminderTimeFormatter(time: sender.date)
+        let reminderDateFormatted = dueDateFormatter(dueDate: sender.date, isReminderDate: true)
+        print(reminderDateFormatted)
         
-        let time = reminderTimeFormatter(time: sender.date)
-        print(time)
+        // Getting the reminder cell to update the label with the new reminder date
+        let indexPath = IndexPath(row: TableViewRow.reminder.rawValue, section: TableViewSection.fields.rawValue)
+        let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
+        cell.fieldLabel.text = reminderTimeFormatted
+        
+        print(reminderTimeFormatted)
     }
     
     func reminderTimeFormatter(time: Date) -> String{
@@ -550,7 +563,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         formatter.pmSymbol = "PM"
         
         let timeString = formatter.string(from: time)
-        return "Remind at \(timeString)"
+        return "Remind me at \(timeString)"
     }
     
     @objc func removeReminderDate() {
@@ -620,7 +633,7 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             
             if indexPath.row == TableViewRow.dueDate.rawValue {
                 if (getItem.dueDate != nil) {
-                    cell.accessoryView = deleteDueDateButton // adds the x to the end of the cell 
+                    cell.accessoryView = deleteDueDateButton // adds the x to the end of the cell
                 }
             }
             
