@@ -29,6 +29,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
     var imagePickerController: UIImagePickerController?
     var datePicker = UIDatePicker()
     var deleteDueDateButton = UIButton(type: .custom) // (x) imageButton used in the accessory view
+    var deleteReminderButton = UIButton(type: .custom)
     var toolBar = UIToolbar()
     var customView = UIView() // custom view to be able to use the touchesBegan func and dismiss the datePicker
     var reminderTimePicker = UIDatePicker()
@@ -63,6 +64,11 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         deleteDueDateButton.addTarget(self, action: #selector(removeDueDate), for: .touchUpInside)
         deleteDueDateButton.sizeToFit()
         deleteDueDateButton.imageView?.tintColor = .black
+        
+        deleteReminderButton.setImage(UIImage(named: "delete"), for: .normal)
+        deleteReminderButton.addTarget(self, action: #selector(removeReminderDate), for: .touchUpInside)
+        deleteReminderButton.sizeToFit()
+        deleteReminderButton.imageView?.tintColor = .black
         
         tableView.tableFooterView = UIView() // remove empty cells if tableView is empty
         
@@ -183,11 +189,12 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
-        deleteDueDateButton.imageView?.tintColor = .black
         if self.view.subviews.contains(datePicker) {
+            deleteDueDateButton.imageView?.tintColor = .black
             dismissDatePicker()
         }
         if self.view.subviews.contains(reminderTimePicker) {
+            deleteReminderButton.imageView?.tintColor = .black
             dismissReminderTimePicker()
         }
         
@@ -539,6 +546,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         cell.fieldLabel.attributedText = reminderAttributed
         //tableView.reloadRows(at: [indexPath], with: .automatic)
         
+        deleteReminderButton.imageView?.tintColor = UIColor(hexString: "0066FF") // x image color to blue
+        cell.accessoryView = deleteReminderButton
+        
         // Toolbar
         reminderTimePickerToolBar = UIToolbar(frame: CGRect(x: 0, y: self.view.frame.height - 260, width: self.view.frame.width, height: 44))
         reminderTimePickerToolBar.backgroundColor = .white
@@ -622,6 +632,8 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         }
         
         dismissReminderTimePicker()
+        deleteReminderButton.imageView?.tintColor = .black
+        
         tableView.reloadData()
     }
     
@@ -682,6 +694,11 @@ extension Edit_Item_VC: UITableViewDataSource, UITableViewDelegate {
             if indexPath.row == TableViewRow.dueDate.rawValue {
                 if (getItem.dueDate != nil) {
                     cell.accessoryView = deleteDueDateButton // adds the x to the end of the cell
+                }
+            }
+            if indexPath.row == TableViewRow.reminder.rawValue {
+                if getItem.reminder != nil {
+                    cell.accessoryView = deleteReminderButton
                 }
             }
             
