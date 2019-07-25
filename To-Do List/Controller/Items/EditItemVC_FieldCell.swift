@@ -34,8 +34,7 @@ class EditItemVC_FieldCell: UITableViewCell {
 //        fieldLabel.attributedText = mutableTitle
         
         if let subText = viewModel.attributedText {
-            // NSAttributedString (Title & Subtitle)
-            fieldLabel.attributedText = subText
+            fieldLabel.attributedText = subText // NSAttributedString (Title & Subtitle)
         } else {
             fieldLabel.text = viewModel.title
         }

@@ -68,6 +68,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         
         /* GlobalDueDate is used to keep a hold of its value and save it to realm if it has a value on viewWillDissappear */
         globalDueDate = getItem.dueDate
+        globalReminderDate = getItem.reminder
         
         // SetUp Current Date
         let date = Date()
@@ -105,6 +106,12 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             }
         }
         
+        if globalReminderDate != nil && getItem.reminder != globalReminderDate {
+            try! self.realm?.write {
+                getItem.reminder = globalReminderDate
+            }
+        }
+        
         if self.view.subviews.contains(datePicker) {
             dismissDatePicker()
         }
@@ -136,12 +143,20 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         } else {
             dueDateFormatted = "Due Date"
         }
-
+        
+        var reminderDateAndTimeFormatted: NSMutableAttributedString?
+        if let reminderDateAndTime = getItem.reminder {
+            let reminderTimeString = reminderTimeFormatter(time: reminderDateAndTime)
+            let reminderDateString = dueDateFormatter(dueDate: reminderDateAndTime, isReminderDate: true)
+            let reminderAttributedString = reminderAttributedTimeFormatter(reminderTime: reminderTimeString, reminderDate: reminderDateString)
+            reminderDateAndTimeFormatted = reminderAttributedString
+        }
+        
         viewModels = [
             .init(icon: #imageLiteral(resourceName: "calendar"), title: dueDateFormatted, textColor: color, attributedText: nil),
-            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder", textColor: UIColor.black, attributedText: nil),
-            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip, textColor: UIColor.black, attributedText: nil),
-            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image", textColor: UIColor.black, attributedText: nil)
+            .init(icon: #imageLiteral(resourceName: "bell"), title: "Reminder", textColor: .black, attributedText: reminderDateAndTimeFormatted),
+            .init(icon: #imageLiteral(resourceName: "pen"), title: item.descrip.isEmpty ? "Add a note..." : item.descrip, textColor: .black, attributedText: nil),
+            .init(icon: #imageLiteral(resourceName: "paperclipIcon"), title: "Import an image", textColor: .black, attributedText: nil)
         ]
     }
     
@@ -161,6 +176,13 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             setViewModels(from: getItem)
         }
         
+        if globalReminderDate != nil && getItem.reminder != globalReminderDate {
+            try! realm?.write {
+                getItem.reminder = globalReminderDate
+            }
+            setViewModels(from: getItem)
+        }
+        
         deleteDueDateButton.imageView?.tintColor = .black
         if self.view.subviews.contains(datePicker) {
             dismissDatePicker()
@@ -168,7 +190,7 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         if self.view.subviews.contains(reminderTimePicker) {
             dismissReminderTimePicker()
         }
-        //dismissDatePicker()
+        
         tableView.reloadData()
     }
     
@@ -492,8 +514,10 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         // Setting Time for Picker
         if let dateAndTime = getItem.reminder {
             reminderTimePicker.setDate(dateAndTime, animated: true)
+            globalReminderDate = dateAndTime
         } else {
             reminderTimePicker.setDate(timePlusHour, animated: true)
+            globalReminderDate = timePlusHour
         }
         reminderTimePicker.addTarget(self, action: #selector(timeChanged), for: .valueChanged)
         self.view.addSubview(reminderTimePicker)
@@ -510,19 +534,9 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             reminderTimeString = reminderTimeFormatter(time: timePlusHour)
             reminderDateString = dueDateFormatter(dueDate: timePlusHour, isReminderDate: true)
         }
-
-        // NSAttributedString (Title & Subtitle)
-        let titleString = reminderTimeString //"Remind me at 8:00 PM"
-        let titleFont = UIFont.systemFont(ofSize: 17)
-        let titleAttributes = [NSAttributedString.Key.font: titleFont]
-        let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
-
-        let subtitleFont = UIFont.systemFont(ofSize: 12)
-        let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
-        let mutableSubtitle = NSMutableAttributedString(string: reminderDateString, attributes: subtitleAttributes)
-        mutableTitle.append(mutableSubtitle)
         
-        cell.fieldLabel.attributedText = mutableTitle
+        let reminderAttributed = reminderAttributedTimeFormatter(reminderTime: reminderTimeString, reminderDate: reminderDateString)
+        cell.fieldLabel.attributedText = reminderAttributed
         //tableView.reloadRows(at: [indexPath], with: .automatic)
         
         // Toolbar
@@ -542,18 +556,16 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
             }
     
     @objc func timeChanged(_ sender: UIDatePicker) {
-        print("Time Changed")
-        print(sender.date)
+        globalReminderDate = sender.date
         let reminderTimeFormatted = reminderTimeFormatter(time: sender.date)
         let reminderDateFormatted = dueDateFormatter(dueDate: sender.date, isReminderDate: true)
-        print(reminderDateFormatted)
+        let reminderTimeAndDateFormatted = reminderAttributedTimeFormatter(reminderTime: reminderTimeFormatted, reminderDate: reminderDateFormatted)
         
         // Getting the reminder cell to update the label with the new reminder date
         let indexPath = IndexPath(row: TableViewRow.reminder.rawValue, section: TableViewSection.fields.rawValue)
         let cell = tableView.cellForRow(at: indexPath) as! EditItemVC_FieldCell
-        cell.fieldLabel.text = reminderTimeFormatted
+        cell.fieldLabel.attributedText = reminderTimeAndDateFormatted
         
-        print(reminderTimeFormatted)
     }
     
     func reminderTimeFormatter(time: Date) -> String{
@@ -566,15 +578,51 @@ class Edit_Item_VC: UIViewController, UITextFieldDelegate, UIImagePickerControll
         return "Remind me at \(timeString)"
     }
     
-    @objc func removeReminderDate() {
+    func reminderAttributedTimeFormatter(reminderTime: String, reminderDate: String) -> NSMutableAttributedString {
+        // NSAttributedString (Title & Subtitle)
+        let titleString = reminderTime //"Remind me at 8:00 PM"
+        let titleFont = UIFont.systemFont(ofSize: 17)
+        let titleAttributes = [NSAttributedString.Key.font: titleFont]
+        let mutableTitle = NSMutableAttributedString(string: "\(titleString)\n", attributes: titleAttributes)
         
-        dismissReminderTimePicker()
+        let subtitleFont = UIFont.systemFont(ofSize: 12)
+        let subtitleAttributes = [NSAttributedString.Key.font: subtitleFont]
+        let mutableSubtitle = NSMutableAttributedString(string: reminderDate, attributes: subtitleAttributes)
+        mutableTitle.append(mutableSubtitle)
+        
+        return mutableTitle
+    }
+    
+    @objc func removeReminderDate() {
+        if getItem.reminder != nil {
+            try! realm?.write {
+                getItem.reminder = nil
+            }
+            setViewModels(from: getItem)
+        }
+        
+        if self.view.subviews.contains(reminderTimePicker) {
+            dismissReminderTimePicker()
+        }
+        
+        globalReminderDate = nil
+        let indexPosition = IndexPath(row: TableViewRow.reminder.rawValue, section: TableViewSection.fields.rawValue)
+        let cell = tableView.cellForRow(at: indexPosition) as! EditItemVC_FieldCell
+        cell.accessoryView = nil
+        
+        tableView.reloadRows(at: [indexPosition], with: .fade)
     }
     
     @objc func doneReminderDatePressed() {
-        
+        if globalReminderDate != nil && getItem.reminder != globalReminderDate {
+            try! realm?.write {
+                getItem.reminder = globalReminderDate
+            }
+            setViewModels(from: getItem)
+        }
         
         dismissReminderTimePicker()
+        tableView.reloadData()
     }
     
     func dismissReminderTimePicker() {
